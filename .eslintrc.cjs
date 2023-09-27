@@ -1,0 +1,22 @@
+module.exports = {
+  root: true,
+  env: { browser: true },
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
+    "eslint-config-prettier",
+  ],
+  ignorePatterns: ["dist", ".eslintrc.cjs"],
+  parser: "@typescript-eslint/parser",
+  plugins: ["react-refresh"],
+  rules: {
+    "@typescript-eslint/no-explicit-any": "off",
+    "react-refresh/only-export-components": [
+      "warn",
+      { allowConstantExport: true },
+    ],
+    "react-hooks/exhaustive-deps": ["error"],
+    "no-nested-ternary": ["error"],
+  },
+};
