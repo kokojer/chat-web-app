@@ -6,9 +6,17 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "eslint-config-prettier",
+    "@feature-sliced"
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parser: "@typescript-eslint/parser",
+  settings: {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    }
+  },
   plugins: ["react-refresh"],
   rules: {
     "@typescript-eslint/no-explicit-any": "off",

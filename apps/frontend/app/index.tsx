@@ -1,9 +1,12 @@
+import { Button } from "antd";
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import styled from "styled-components";
+import reactLogo from "/react.svg";
 import viteLogo from "/vite.svg";
-import "./App.css";
+import "./styles/App.css";
+import { withProviders } from "./providers/withProviders.tsx";
 
-function App() {
+const App = () => {
   const [count, setCount] = useState(0);
 
   return (
@@ -28,8 +31,16 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <Button type="primary">Button</Button>
+      <StyledButton>efwf</StyledButton>
     </>
   );
-}
+};
 
-export default App;
+const AppWithProviders = withProviders(App);
+
+export default AppWithProviders;
+
+const StyledButton = styled.button`
+  color: ${(props) => props.theme.antd.colorPrimary};
+`;
