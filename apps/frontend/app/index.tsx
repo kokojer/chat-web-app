@@ -1,10 +1,10 @@
-import { Button } from "antd";
-import { useState } from "react";
-import styled from "styled-components";
-import reactLogo from "/react.svg";
-import viteLogo from "/vite.svg";
-import "./styles/App.css";
-import { withProviders } from "./providers/withProviders.tsx";
+import { Button } from 'antd';
+import { useState } from 'react';
+
+import { withProviders } from './providers/withProviders.tsx';
+import './styles/App.css';
+import reactLogo from '/react.svg';
+import viteLogo from '/vite.svg';
 
 const App = () => {
   const [count, setCount] = useState(0);
@@ -32,7 +32,6 @@ const App = () => {
         Click on the Vite and React logos to learn more
       </p>
       <Button type="primary">Button</Button>
-      <StyledButton>efwf</StyledButton>
     </>
   );
 };
@@ -40,7 +39,3 @@ const App = () => {
 const AppWithProviders = withProviders(App);
 
 export default AppWithProviders;
-
-const StyledButton = styled.button`
-  color: ${(props) => props.theme.antd.colorPrimary};
-`;
