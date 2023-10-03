@@ -6,7 +6,7 @@ module.exports = {
   semi: true,
   importOrder: [
     '^app(/*)(.*)$',
-    '^pages/(.*)$',
+    '^pages(/*)(.*)$',
     '^widgets/(.*)$',
     '^features/(.*)$',
     '^entities/(.*)$',
