@@ -1,14 +1,17 @@
 import { Button, Form, Input, Space, Typography } from 'antd';
+import { Rule } from 'antd/lib/form';
 import { FC } from 'react';
 import { NavLink, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getBooleanFromString } from 'shared/lib';
 
-type FieldType = {
+type RulesType = Record<keyof FieldType, Rule[]>;
+
+interface FieldType {
   username?: string;
   password?: string;
-};
+}
 
 const { Title } = Typography;
 
@@ -20,9 +23,21 @@ const onFinishFailed = (errorInfo: any) => {
   console.log('Failed:', errorInfo);
 };
 
-const RULES_FOR_FIELDS = {
-  username: [{ required: true, message: 'Please input your username!' }],
-  password: [{ required: true, message: 'Please input your password!' }],
+const RULES_FOR_FIELDS: RulesType = {
+  username: [
+    { required: true, message: 'Please input your username!' },
+    {
+      max: 20,
+      message: 'Max: 20 symbols',
+    },
+  ],
+  password: [
+    { required: true, message: 'Please input your password!' },
+    {
+      max: 30,
+      message: 'Max: 30 symbols',
+    },
+  ],
 };
 
 export const Auth: FC = () => {
@@ -35,11 +50,12 @@ export const Auth: FC = () => {
         {isRegister ? 'Sign up' : 'Sign in'} to {__APP_NAME__}
       </StyledTitle>
       <StyledFormContainer>
-        <StyledForm
+        <Form
           name="basic"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           layout="vertical"
+          style={{ maxWidth: '600px' }}
         >
           <Form.Item<FieldType>
             label="Username"
@@ -60,7 +76,7 @@ export const Auth: FC = () => {
           <StyledButton type="primary" htmlType="submit">
             {isRegister ? 'Sign up' : 'Sign in'}
           </StyledButton>
-        </StyledForm>
+        </Form>
       </StyledFormContainer>
       <StyledSignUpContainer>
         <Typography>
@@ -99,10 +115,6 @@ const StyledSignUpContainer = styled.div`
 const StyledButton = styled(Button)`
   width: 100%;
   text-transform: uppercase;
-`;
-
-const StyledForm = styled(Form)`
-  max-width: 600px;
 `;
 
 const StyledTitle = styled(Title)`

@@ -7,5 +7,9 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   define: {
     __APP_NAME__: JSON.stringify(process.env.npm_package_name),
+    __SERVER_PORT__: JSON.stringify(process.env.npm_package_config_port),
+  },
+  server: {
+    port: 4000,
   },
 });

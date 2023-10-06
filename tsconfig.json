@@ -22,7 +22,7 @@
   },
   "include": [
     "apps/frontend",
-    "vite-env.d.ts"
+    "types/vite-env.d.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
