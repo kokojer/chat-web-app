@@ -13,15 +13,14 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 500;
   }
   
-  body {
+  body{
     margin: 0;
     padding: 0;
-    font-family: 'TTNorms' , 'serif';
-    font-weight: 500;
-    display: flex;
     min-width: 320px;
     min-height: 100vh;
-    background: ${({ theme }) => theme.base.ghostWhite};
+    display: flex;
+    font-family: 'TTNorms', 'serif';
+    font-weight: 500;
   }
   
   #root{

@@ -1,3 +1,4 @@
+import { useReactiveVar } from '@apollo/client';
 import { Button, Form, Input, Space, Typography } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { FC } from 'react';
@@ -5,6 +6,8 @@ import { NavLink, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getBooleanFromString } from 'shared/lib';
+
+import { TYPE_THEME, typeTheme } from '../../../shared/config/apolloClient';
 
 type RulesType = Record<keyof FieldType, Rule[]>;
 
@@ -43,13 +46,14 @@ const RULES_FOR_FIELDS: RulesType = {
 export const Auth: FC = () => {
   const [searchParams] = useSearchParams();
   const isRegister = getBooleanFromString(searchParams.get('register'));
+  const themeType = useReactiveVar(typeTheme);
 
   return (
     <Space direction="vertical" size="small">
       <StyledTitle level={3}>
         {isRegister ? 'Sign up' : 'Sign in'} to {__APP_NAME__}
       </StyledTitle>
-      <StyledFormContainer>
+      <StyledFormContainer themeType={themeType}>
         <Form
           name="basic"
           onFinish={onFinish}
@@ -78,7 +82,7 @@ export const Auth: FC = () => {
           </StyledButton>
         </Form>
       </StyledFormContainer>
-      <StyledSignUpContainer>
+      <StyledSignUpContainer themeType={themeType}>
         <Typography>
           {isRegister ? 'Already have an account?' : `New to ${__APP_NAME__}?`}
         </Typography>
@@ -90,22 +94,28 @@ export const Auth: FC = () => {
   );
 };
 
-const StyledFormContainer = styled.div`
+const StyledFormContainer = styled.div<{ themeType: TYPE_THEME }>`
   padding: 10px;
-  background: white;
+  background: ${({ theme }) => theme.base.background.main};
   border-radius: 6px;
-  border: 1px solid ${({ theme }) => theme.base.gray};
-  box-shadow: 5px 5px 5px 0 gray;
+  border: 1px solid ${({ theme }) => theme.base.typography.inActiveText};
+  box-shadow: ${({ theme, themeType }) =>
+    themeType === TYPE_THEME.LIGHT
+      ? `5px 5px 5px 0 ${theme.base.typography.inActiveText}`
+      : 'none'};
   min-width: 250px;
 `;
 
-const StyledSignUpContainer = styled.div`
+const StyledSignUpContainer = styled.div<{ themeType: TYPE_THEME }>`
   padding: 10px;
-  background: white;
+  background: ${({ theme }) => theme.base.background.main};
   border-radius: 6px;
   font-size: 15px;
-  border: 1px solid ${({ theme }) => theme.base.gray};
-  box-shadow: 5px 5px 5px 0 gray;
+  border: 1px solid ${({ theme }) => theme.base.typography.inActiveText};
+  box-shadow: ${({ theme, themeType }) =>
+    themeType === TYPE_THEME.LIGHT
+      ? `5px 5px 5px 0 ${theme.base.typography.inActiveText}`
+      : 'none'};
   min-width: 250px;
   display: flex;
   flex-direction: column;

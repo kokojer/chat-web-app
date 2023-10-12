@@ -1,25 +1,22 @@
 import { ApolloProvider } from '@apollo/client';
-import { ConfigProvider, Spin } from 'antd';
+import { Spin } from 'antd';
 import { ReactNode, Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { antdTheme } from 'shared/config/antdTheme.ts';
 import client from 'shared/config/apolloClient.ts';
 
-import ThemeProvider from './themeProvider.tsx';
+import CombinedThemeProvider from './themeProvider.tsx';
 
 export const withProviders = (component: () => ReactNode) => () => (
   <BrowserRouter>
     <ApolloProvider client={client}>
-      <ConfigProvider theme={antdTheme}>
-        <ThemeProvider>
-          <Suspense
-            fallback={<Spin delay={300} className="overlay" size="large" />}
-          >
-            {component()}
-          </Suspense>
-        </ThemeProvider>
-      </ConfigProvider>
+      <CombinedThemeProvider>
+        <Suspense
+          fallback={<Spin delay={300} className="overlay" size="large" />}
+        >
+          {component()}
+        </Suspense>
+      </CombinedThemeProvider>
     </ApolloProvider>
   </BrowserRouter>
 );
