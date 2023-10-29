@@ -1,26 +1,26 @@
-import { PrismaClient } from '@prisma/client';
-import chalk from 'chalk';
+import { PrismaClient } from "@prisma/client";
+const chalk = require("chalk");
 
 const prisma = new PrismaClient();
 
 const mainSeed = async () => {
-  await prisma.users.createMany({
+  await prisma.user.createMany({
     data: [
       {
-        username: 'Alice',
-        password: 'wefweqhqwefwf',
+        username: "Alice",
+        password: "wefweqhqwefwf",
       },
       {
-        username: 'Bob',
-        password: 'wefweqhqwefwf',
+        username: "Bob",
+        password: "wefweqhqwefwf",
       },
       {
-        username: 'Ivan',
-        password: 'wefweqhqwefwf',
+        username: "Ivan",
+        password: "wefweqhqwefwf",
       },
       {
-        username: 'Vasian',
-        password: 'wefweqhqwefwf',
+        username: "Vasian",
+        password: "wefweqhqwefwf",
       },
     ],
   });

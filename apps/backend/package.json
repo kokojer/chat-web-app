@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "prisma": {
-    "schema": "prisma/schema.prisma",
-    "seed": "prisma/seed.ts"
+    "schema": "src/prisma/schema.prisma",
+    "seed": "src/prisma/seed.ts"
   },
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
     "db:create": "ts-node --esm src/prisma/scripts/createDatabase.ts",
-    "db:migrate": "src/prisma migrate dev",
+    "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node --esm src/prisma/scripts/seed.ts"
   },
   "author": "kokojer",

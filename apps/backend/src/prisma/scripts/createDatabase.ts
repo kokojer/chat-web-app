@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import chalk from 'chalk';
+import { PrismaClient } from "@prisma/client";
+const chalk = require("chalk");
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.DEFAULT_DATABASE_URL,
