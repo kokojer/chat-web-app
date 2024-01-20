@@ -3,8 +3,8 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
-
 import { AppModule } from "./app.module";
+import { fastifyCookie } from "@fastify/cookie";
 const chalk = require("chalk");
 
 const server = async () => {
@@ -12,6 +12,13 @@ const server = async () => {
     AppModule,
     new FastifyAdapter(),
   );
+  await app.register(fastifyCookie, {
+    secret: process.env.SECRET_KEY,
+  });
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
   await app.listen(process.env.BACKEND_PORT);
 };
 
