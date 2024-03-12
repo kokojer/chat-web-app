@@ -5,6 +5,7 @@ import { join } from "path";
 
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
+import { FastifyReply, FastifyRequest } from "fastify";
 
 @Module({
   imports: [
@@ -13,8 +14,8 @@ import { AuthModule } from "./auth/auth.module";
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
-      context: (ctx) => {
-        return ctx;
+      context: (req: FastifyRequest, res: FastifyReply) => {
+        return { req, res };
       },
       playground: {
         settings: {
