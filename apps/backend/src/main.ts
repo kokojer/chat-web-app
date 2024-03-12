@@ -15,10 +15,12 @@ const server = async () => {
   await app.register(fastifyCookie, {
     secret: process.env.SECRET_KEY,
   });
+
   app.enableCors({
-    origin: true,
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   });
+
   await app.listen(process.env.BACKEND_PORT);
 };
 

@@ -8,6 +8,7 @@ export enum TYPE_THEME {
 const client = new ApolloClient({
   uri: import.meta.env.API_BASE_URL,
   cache: new InMemoryCache(),
+  credentials: 'include'
 });
 
 export const typeTheme = makeVar<TYPE_THEME>(TYPE_THEME.DARK);
