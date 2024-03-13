@@ -1,4 +1,4 @@
-import {useMutation, useReactiveVar} from '@apollo/client';
+import { useMutation, useReactiveVar } from '@apollo/client';
 import { Button, Form, Input, Space, Typography } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { FC } from 'react';
@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { TYPE_THEME, typeTheme } from 'shared/config/apolloClient';
 
 import { getBooleanFromString } from 'shared/lib';
-import {LOGIN} from "../api";
+import { LOGIN } from '../api';
 
 type RulesType = Record<keyof FieldType, Rule[]>;
 
@@ -44,15 +44,15 @@ export const Auth: FC = () => {
   const [searchParams] = useSearchParams();
   const isRegister = getBooleanFromString(searchParams.get('register'));
   const themeType = useReactiveVar(typeTheme);
-  const [login] = useMutation(LOGIN)
+  const [login] = useMutation(LOGIN);
 
   const onFinish = async (values: FieldType) => {
-      await login({
-        variables:{
-          username: values.username,
-          password: values.password
-        }
-      })
+    await login({
+      variables: {
+        username: values.username,
+        password: values.password,
+      },
+    });
   };
 
   return (
