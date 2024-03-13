@@ -5,8 +5,8 @@
     "dev": "turbo run dev"
   },
   "devDependencies": {
-    "eslint": "^8.48.0",
-    "prettier": "^3.0.3",
+    "eslint": "8.48.0",
+    "prettier": "3.0.3",
     "turbo": "latest"
   },
   "name": "chat-web-app",

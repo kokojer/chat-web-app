@@ -5,6 +5,8 @@
     "skipLibCheck": true,
     "types": ["vite/client"],
     "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     /* Bundler mode */
     "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
