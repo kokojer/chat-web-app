@@ -6,6 +6,7 @@ import { AuthService } from "./auth.service";
 import { AuthResolver } from "./auth.resolver";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { LocalStrategy } from "./strategies/local.strategy";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Module({
   imports: [
@@ -17,6 +18,12 @@ import { LocalStrategy } from "./strategies/local.strategy";
       secret: process.env.SECRET_KEY,
     }),
   ],
-  providers: [AuthService, AuthResolver, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    AuthResolver,
+    LocalStrategy,
+    JwtStrategy,
+    PrismaService,
+  ],
 })
 export class AuthModule {}

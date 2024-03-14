@@ -4,17 +4,20 @@ import * as bcrypt from "bcrypt";
 import { LoginUserInput } from "./dto/login-user.input";
 import { UserService } from "../user/user.service";
 import { User } from "../user/user.model";
+import { Prisma, Refresh_session } from "@prisma/client";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private prisma: PrismaService
   ) {}
 
   async validateUser(
     username: string,
-    password: string,
+    password: string
   ): Promise<Omit<User, "password">> {
     const user = await this.userService.getUser({ username });
 
@@ -26,6 +29,14 @@ export class AuthService {
 
     const { password: _, ...result } = user;
     return result;
+  }
+
+  async createSession(
+    data: Prisma.Refresh_sessionCreateInput
+  ): Promise<Refresh_session> {
+    return this.prisma.refresh_session.create({
+      data,
+    });
   }
 
   async login(loginUserInput: LoginUserInput) {

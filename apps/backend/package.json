@@ -32,13 +32,17 @@
     "fastify": "4.26.0",
     "graphql": "16.8.1",
     "passport-jwt": "4.0.1",
-    "passport-local": "1.0.0"
+    "passport-local": "1.0.0",
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "10.1.18",
     "@nestjs/schematics": "10.0.2",
     "@trivago/prettier-plugin-sort-imports": "4.2.0",
+    "@types/bcrypt": "5.0.2",
     "@types/node": "20.8.7",
+    "@types/passport-jwt": "4.0.1",
+    "@types/uuid": "9.0.8",
     "@typescript-eslint/eslint-plugin": "6.7.3",
     "@typescript-eslint/parser": "6.7.3",
     "eslint": "8.48.0",

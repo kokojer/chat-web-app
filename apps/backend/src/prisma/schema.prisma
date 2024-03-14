@@ -11,7 +11,19 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique @db.VarChar(20)
-  password String
+  id              Int               @id @default(autoincrement())
+  username        String            @unique @db.VarChar(20)
+  password        String
+  Refresh_session Refresh_session[]
+}
+
+model Refresh_session {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  refreshToken String   @db.Uuid()
+  userAgent    String   @db.VarChar(200)
+  ip           String   @db.VarChar(15)
+  expiresIn    BigInt
+  createdAt    DateTime @default(now())
+  User         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
