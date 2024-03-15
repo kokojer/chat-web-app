@@ -8,6 +8,7 @@ export default defineConfig({
   envPrefix: 'API',
   define: {
     __APP_NAME__: JSON.stringify(process.env.npm_package_name),
+    __API_BASE_URL__: JSON.stringify(process.env.API_BASE_URL),
   },
   server: {
     port: 4000,

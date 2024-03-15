@@ -1,7 +1,7 @@
 import { ThemeConfig, theme as antdTheme } from 'antd';
 import { DefaultTheme } from 'styled-components';
 
-import { TYPE_THEME } from './apolloClient';
+import { TYPE_THEME } from './globalVars.ts';
 
 export const getAntdTheme = (
   theme: DefaultTheme['base'],

@@ -3,6 +3,7 @@
 # ------------------------------------------------------
 
 type User {
+  id: Int!
   username: String!
   password: String!
 }
@@ -18,7 +19,8 @@ type Query {
 
 type Mutation {
   login(loginUserInput: LoginUserInput!): LoginResponse!
-  signup(signupUserInput: CreateUserInput!): User!
+  signup(signupUserInput: CreateUserInput!): LoginResponse!
+  refreshTokens: LoginResponse!
 }
 
 input LoginUserInput {

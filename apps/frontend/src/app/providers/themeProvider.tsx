@@ -3,8 +3,8 @@ import { ConfigProvider, theme } from 'antd';
 import { PropsWithChildren } from 'react';
 import { DefaultTheme, ThemeProvider } from 'styled-components';
 
-import { TYPE_THEME, typeTheme } from 'shared/config/apolloClient';
 import { getAntdTheme } from 'shared/config/getAntdTheme';
+import { TYPE_THEME, typeTheme } from 'shared/config/globalVars.ts';
 import {
   darkStyledTheme,
   lightStyledTheme,

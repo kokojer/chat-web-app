@@ -1,23 +1,23 @@
 import { BulbFilled } from '@ant-design/icons';
 import { Switch } from 'antd';
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { TYPE_THEME, typeTheme } from 'shared/config/apolloClient';
+import { TYPE_THEME, typeTheme } from 'shared/config/globalVars.ts';
 
 export const ThemeSwitcher: FC = () => {
   const [checked, setChecked] = useState(typeTheme() === TYPE_THEME.DARK);
 
+  const onChangeSwitch = useCallback((checked: boolean) => {
+    setChecked(checked);
+    typeTheme(checked ? TYPE_THEME.DARK : TYPE_THEME.LIGHT);
+    localStorage.setItem('theme', checked ? TYPE_THEME.DARK : TYPE_THEME.LIGHT);
+  }, []);
+
   return (
     <SwitchContainer>
       <BulbFilled />
-      <Switch
-        onChange={(checked) => {
-          setChecked(checked);
-          typeTheme(checked ? TYPE_THEME.DARK : TYPE_THEME.LIGHT);
-        }}
-        defaultChecked={checked}
-      />
+      <Switch onChange={onChangeSwitch} defaultChecked={checked} />
     </SwitchContainer>
   );
 };

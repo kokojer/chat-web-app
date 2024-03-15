@@ -17,33 +17,23 @@ export class AuthResolver {
   @UseGuards(GqlAuthGuard)
   async login(
     @Args("loginUserInput") loginUserInput: LoginUserInput,
-    @Context() { res, req }: { res: FastifyReply; req: FastifyRequest }
+    @Context() { req, res }: { req: FastifyRequest; res: FastifyReply },
   ) {
-    const tokenWithUser = await this.authService.login(loginUserInput);
-    const sessionData = {
-      User: {
-        connect: {
-          id: tokenWithUser.user.id,
-        },
-      },
-      ip: req.ip,
-      userAgent: req.headers["user-agent"],
-      expiresIn: 2592000, // 30 days
-      refreshToken: uuid(),
-    };
-    const session = await this.authService.createSession(sessionData);
-
-    res.setCookie("refreshToken", session.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      maxAge: Number(session.expiresIn),
-    });
-
-    return tokenWithUser;
+    return await this.authService.login(loginUserInput, req, res);
   }
 
-  @Mutation(() => User)
-  signup(@Args("signupUserInput") signupUserInput: CreateUserInput) {
-    return this.authService.signup(signupUserInput);
+  @Mutation(() => LoginResponse)
+  signup(
+    @Args("signupUserInput") signupUserInput: CreateUserInput,
+    @Context() { req, res }: { req: FastifyRequest; res: FastifyReply },
+  ) {
+    return this.authService.signup(signupUserInput, req, res);
+  }
+
+  @Mutation(() => LoginResponse)
+  refreshTokens(
+    @Context() { req, res }: { req: FastifyRequest; res: FastifyReply },
+  ) {
+    return this.authService.refreshTokens(req, res);
   }
 }
