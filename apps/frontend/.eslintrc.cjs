@@ -26,5 +26,8 @@ module.exports = {
     ],
     'react-hooks/exhaustive-deps': ['error'],
     'no-nested-ternary': ['error'],
+    "import/no-internal-modules": [ "error", {
+      "allow": [ "/**/*"],
+    } ]
   },
 };

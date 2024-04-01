@@ -10,6 +10,7 @@ export const lightStyledTheme = {
     light: '#FAFBFF',
     primary: '#E6ECFE',
   },
+  boxShadow: 'rgba(46, 46, 162, 0.2)',
 };
 
 export const darkStyledTheme = {
@@ -20,8 +21,9 @@ export const darkStyledTheme = {
     inActiveText: '#707C97',
   },
   background: {
-    main: 'rgb(22, 27, 34)',
-    light: 'rgb(13, 17, 23)',
+    main: 'rgb(6,14,19)',
+    light: 'rgb(12,12,33)',
     primary: '#E6ECFE',
   },
+  boxShadow: 'rgba(128,125,125,0.25)',
 };

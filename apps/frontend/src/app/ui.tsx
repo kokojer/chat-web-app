@@ -1,14 +1,28 @@
+import { useReactiveVar } from '@apollo/client';
 import { Layout as AntdLayout } from 'antd';
 import { FC, PropsWithChildren } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { Sidebar } from 'features/sidebar';
+
 import { ThemeSwitcher } from 'entities/themeSwitcher';
+
+import { userInfo } from '../shared/config/globalVars.ts';
+import { ROUTES_WITH_SIDEBAR } from '../shared/config/routes.ts';
 
 const { Content } = AntdLayout;
 
 const Layout: FC<PropsWithChildren> = ({ children }) => {
+  const { pathname } = useLocation();
+  const userStore = useReactiveVar(userInfo);
+  const showSidebar = ROUTES_WITH_SIDEBAR.some(
+    (route) => route.pathname === pathname,
+  );
+
   return (
     <MainWrapper>
+      {userStore && showSidebar && <Sidebar />}
       <ContentWrapper>
         <ThemeSwitcher />
         {children}

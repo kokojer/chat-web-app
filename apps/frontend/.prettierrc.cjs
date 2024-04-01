@@ -5,6 +5,7 @@ module.exports = {
   singleQuote: true,
   semi: true,
   importOrder: [
+    '^assets/(.*)$',
     '^app(/*)(.*)$',
     '^pages(/*)(.*)$',
     '^widgets/(.*)$',
