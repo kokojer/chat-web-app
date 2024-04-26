@@ -14,7 +14,10 @@ export const REFRESH_TOKENS = gql(`mutation refreshTokens {
   }
 }`);
 
-const httpLink = new HttpLink({ uri: import.meta.env.API_BASE_URL });
+const httpLink = new HttpLink({
+  uri: import.meta.env.API_BASE_URL,
+  credentials: 'include',
+});
 
 const authMiddleware = setContext(async () => {
   let accessToken = localStorage.getItem('accessToken');
@@ -39,7 +42,6 @@ const authMiddleware = setContext(async () => {
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: concat(authMiddleware, httpLink),
-  credentials: 'include',
 });
 
 export default client;

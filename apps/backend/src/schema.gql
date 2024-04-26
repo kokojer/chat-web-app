@@ -21,6 +21,9 @@ type Mutation {
   login(loginUserInput: LoginUserInput!): LoginResponse!
   signup(signupUserInput: CreateUserInput!): LoginResponse!
   refreshTokens: LoginResponse!
+
+  """Always return null"""
+  logout: Boolean
 }
 
 input LoginUserInput {

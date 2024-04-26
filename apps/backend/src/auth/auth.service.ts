@@ -44,6 +44,7 @@ export class AuthService {
   }
 
   async getSession(refreshToken: string): Promise<Refresh_session> {
+    if (!refreshToken) return null;
     return this.prisma.refresh_session.findFirst({
       where: {
         refreshToken,
@@ -175,5 +176,19 @@ export class AuthService {
       }),
       user: result,
     };
+  }
+
+  async logout(req: FastifyRequest, res: FastifyReply) {
+    const session = await this.getSession(req.cookies.refreshToken);
+    if (!session) {
+      throw new GraphQLError("INVALID_REFRESH_SESSION", {
+        extensions: { code: 401 },
+      });
+    }
+    await this.deleteSession(session.id);
+
+    res.clearCookie("refreshToken");
+
+    return null;
   }
 }

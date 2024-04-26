@@ -1,8 +1,12 @@
-import { Button, Typography } from 'antd';
-import { FC } from 'react';
+import { useMutation } from '@apollo/client';
+import { Button, Typography, notification } from 'antd';
+import { FC, useEffect } from 'react';
 import styled from 'styled-components';
 
 import IconPower from 'assets/power.svg?react';
+
+import { userInfo } from '../../shared/config/globalVars.ts';
+import { LOGOUT } from './api.ts';
 
 interface LogoutButtonProps {
   sidebarCollapsed: boolean;
@@ -11,8 +15,27 @@ interface LogoutButtonProps {
 export const LogoutButton: FC<LogoutButtonProps> = ({
   sidebarCollapsed,
 }: LogoutButtonProps) => {
+  const [logout, { error: logoutError }] = useMutation(LOGOUT);
+
+  useEffect(() => {
+    if (!logoutError) return;
+
+    notification.error({
+      message: 'Error!',
+      description: logoutError?.message,
+    });
+  }, [logoutError]);
+
   return (
-    <StyledButton type="link" $sidebarCollapsed={sidebarCollapsed}>
+    <StyledButton
+      type="link"
+      $sidebarCollapsed={sidebarCollapsed}
+      onClick={async () => {
+        await logout();
+        localStorage.removeItem('accessToken');
+        userInfo(undefined);
+      }}
+    >
       <IconPower />
       <Typography>LOGOUT</Typography>
     </StyledButton>
