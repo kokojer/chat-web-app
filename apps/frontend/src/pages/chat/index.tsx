@@ -1,9 +1,10 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Flex, Typography } from 'antd';
+import { Flex, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { Chat } from 'features/chat';
 import { SearchChats } from 'features/searchChats';
+
+import { CreateChat } from '../../features/createChatModal';
 
 const { Title } = Typography;
 
@@ -13,9 +14,7 @@ const ChatPage = () => {
       <Flex flex="1 1 40%" vertical gap="30px">
         <Flex justify="space-between" align="center">
           <Title>Chat</Title>
-          <Button icon={<PlusOutlined />} type="primary" size="large">
-            Create New Chat
-          </Button>
+          <CreateChat />
         </Flex>
         <SearchChats />
       </Flex>

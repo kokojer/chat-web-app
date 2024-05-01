@@ -1,0 +1,1 @@
+export { UserMiniCard } from './ui';
