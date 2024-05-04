@@ -5,7 +5,9 @@ export const LOGIN = gql(`
     login(loginUserInput: { username: $username, password: $password }) {
       user {
         username,
-        userId: id
+        userId: id,
+        firstName,
+        lastName
       }
       access_token
     }
@@ -13,11 +15,13 @@ export const LOGIN = gql(`
 `);
 
 export const SIGNUP = gql(`
-  mutation signup($username: String!, $password: String!) {
-    signup(signupUserInput: { username: $username, password: $password }) {
+  mutation signup($firstName: String!,$lastName: String!, $username: String!, $password: String!) {
+    signup(signupUserInput: { firstName: $firstName, lastName:$lastName, username: $username, password: $password }) {
       user {
         username
-        userId: id
+        userId: id,
+        firstName,
+        lastName
       }
       access_token
     }

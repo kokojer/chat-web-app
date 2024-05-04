@@ -8,6 +8,8 @@ export enum TYPE_THEME {
 export interface UserInfo {
   userId: number;
   username: string;
+  firstName: string;
+  lastName: string;
 }
 
 export const typeTheme = makeVar<TYPE_THEME>(

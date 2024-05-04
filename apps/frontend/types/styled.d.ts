@@ -17,6 +17,11 @@ declare module 'styled-components' {
         primary: string;
       };
       boxShadow: string;
+      scrollbar: {
+        track: string;
+        thumb: string;
+        thumbHover: string;
+      };
     };
   }
 }

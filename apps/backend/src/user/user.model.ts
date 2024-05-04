@@ -6,6 +6,12 @@ export class User {
   id: number;
 
   @Field(() => String)
+  firstName: string;
+
+  @Field(() => String)
+  lastName: string;
+
+  @Field(() => String)
   username: string;
 
   @Field(() => String)

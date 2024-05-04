@@ -1,9 +1,14 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Flex, Input, Modal, Typography } from 'antd';
-import { FC, useState } from 'react';
+import { PlusOutlined, WarningOutlined } from '@ant-design/icons';
+import { useQuery } from '@apollo/client';
+import { Button, Input, Modal, Typography } from 'antd';
+import { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import { UserMiniCard } from '../../../entities/userMiniCard';
+import { UserMiniCard } from 'entities/userMiniCard';
+
+import { userInfo } from 'shared/config/globalVars.ts';
+
+import { GET_USERS_BY_OCCURRENCES } from '../api.ts';
 
 const { Title } = Typography;
 
@@ -15,7 +20,27 @@ const modalStyles = {
 
 export const CreateChat: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const { data, previousData } = useQuery(GET_USERS_BY_OCCURRENCES, {
+    variables: {
+      nameOrUsername: searchValue,
+    },
+  });
 
+  const userStore = userInfo();
+  const foundUsers = useMemo(() => {
+    const actualFilteredUsers = data?.getUsersByOccurrences.filter(
+      (user) => userStore?.username !== user.username,
+    );
+    const previousFilteredUsers = previousData?.getUsersByOccurrences.filter(
+      (user) => userStore?.username !== user.username,
+    );
+    return actualFilteredUsers ?? previousFilteredUsers;
+  }, [
+    data?.getUsersByOccurrences,
+    previousData?.getUsersByOccurrences,
+    userStore?.username,
+  ]);
   return (
     <>
       <StyledButton
@@ -43,24 +68,23 @@ export const CreateChat: FC = () => {
           placeholder="Enter name or username"
           size="large"
           style={{ marginBottom: '10px' }}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
         />
-        <StyledCardContainer wrap="wrap" gap={5}>
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
-          <UserMiniCard />
+        <StyledCardContainer>
+          {foundUsers?.length ? (
+            foundUsers.map(({ firstName, lastName, username }) => (
+              <UserMiniCard
+                firstName={firstName}
+                lastName={lastName}
+                username={username}
+              />
+            ))
+          ) : (
+            <StyledNotFoundError>
+              <WarningOutlined /> Users not found
+            </StyledNotFoundError>
+          )}
         </StyledCardContainer>
       </StyledModal>
     </>
@@ -83,10 +107,29 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const StyledModal = styled(Modal)``;
+const StyledModal = styled(Modal)`
+  .ant-modal-content {
+    background: ${({ theme }) => theme.base.background.light};
+  }
+  .ant-modal-header {
+    background: ${({ theme }) => theme.base.background.light};
+  }
+`;
 
-const StyledCardContainer = styled(Flex)`
+const StyledCardContainer = styled.div`
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: repeat(auto-fill, 60px);
   height: 320px;
   width: calc(100% + 10px);
   overflow: auto;
+`;
+
+const StyledNotFoundError = styled.div`
+  position: absolute;
+  font-size: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 `;

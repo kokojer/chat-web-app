@@ -7,19 +7,15 @@ const mainSeed = async () => {
   await prisma.user.createMany({
     data: [
       {
+        firstName: "Алиса",
+        lastName: "Иванова",
         username: "Alice",
         password: "wefweqhqwefwf",
       },
       {
+        firstName: "Боб",
+        lastName: "Бобчинский",
         username: "Bob",
-        password: "wefweqhqwefwf",
-      },
-      {
-        username: "Ivan",
-        password: "wefweqhqwefwf",
-      },
-      {
-        username: "Vasian",
         password: "wefweqhqwefwf",
       },
     ],

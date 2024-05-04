@@ -14,6 +14,8 @@ type RulesType = Record<keyof FieldType, Rule[]>;
 
 interface FieldType {
   username: string;
+  firstName: string;
+  lastName: string;
   password: string;
 }
 
@@ -24,6 +26,20 @@ const onFinishFailed = (errorInfo: any) => {
 };
 
 const RULES_FOR_FIELDS: RulesType = {
+  firstName: [
+    { required: true, message: 'Please input your first name!' },
+    {
+      max: 30,
+      message: 'Max: 30 symbols',
+    },
+  ],
+  lastName: [
+    { required: true, message: 'Please input your last name!' },
+    {
+      max: 30,
+      message: 'Max: 30 symbols',
+    },
+  ],
   username: [
     { required: true, message: 'Please input your username!' },
     {
@@ -56,6 +72,8 @@ export const Auth: FC = () => {
         await signup({
           variables: {
             username: values.username,
+            firstName: values.firstName,
+            lastName: values.lastName,
             password: values.password,
           },
         });
@@ -77,6 +95,8 @@ export const Auth: FC = () => {
     userInfo({
       userId: loginData.login.user.userId,
       username: loginData.login.user.username,
+      firstName: loginData.login.user.firstName,
+      lastName: loginData.login.user.lastName,
     });
     navigate('/');
   }, [loginData, navigate]);
@@ -87,6 +107,8 @@ export const Auth: FC = () => {
     userInfo({
       userId: signupData.signup.user.userId,
       username: signupData.signup.user.username,
+      firstName: signupData.signup.user.firstName,
+      lastName: signupData.signup.user.lastName,
     });
     navigate('/');
   }, [navigate, signupData]);
@@ -113,6 +135,24 @@ export const Auth: FC = () => {
           layout="vertical"
           style={{ maxWidth: '600px' }}
         >
+          {isRegister && (
+            <>
+              <Form.Item<FieldType>
+                label="First name"
+                name="firstName"
+                rules={RULES_FOR_FIELDS.firstName}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item<FieldType>
+                label="Last name"
+                name="lastName"
+                rules={RULES_FOR_FIELDS.lastName}
+              >
+                <Input />
+              </Form.Item>
+            </>
+          )}
           <Form.Item<FieldType>
             label="Username"
             name="username"
@@ -162,6 +202,9 @@ const StyledFormContainer = styled.div<{ $themeType: TYPE_THEME }>`
       ? `5px 5px 5px 0 ${theme.base.typography.inActiveText}`
       : 'none'};
   min-width: 250px;
+  .ant-form-item {
+    margin-bottom: 18px;
+  }
 `;
 
 const StyledSignUpContainer = styled.div<{ $themeType: TYPE_THEME }>`

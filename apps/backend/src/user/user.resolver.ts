@@ -14,4 +14,13 @@ export class UserResolver {
   async getUser(@Args("id", { type: () => Int }) id: number) {
     return this.userService.getUser({ id });
   }
+
+  @Query(() => [User])
+  @UseGuards(JwtAuthGuard)
+  async getUsersByOccurrences(
+    @Args("nameOrUsername", { type: () => String })
+    nameOrUsername: string,
+  ) {
+    return this.userService.getUsersByOccurrences({ nameOrUsername });
+  }
 }

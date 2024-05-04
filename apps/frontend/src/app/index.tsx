@@ -18,7 +18,12 @@ const getUser = async (accessToken: string) => {
       id: payloadJWT.userId,
     },
   });
-  userInfo({ userId: data.getUser.id, username: data.getUser.username });
+  userInfo({
+    userId: data.getUser.id,
+    username: data.getUser.username,
+    firstName: data.getUser.firstName,
+    lastName: data.getUser.lastName,
+  });
 };
 
 const App = () => {

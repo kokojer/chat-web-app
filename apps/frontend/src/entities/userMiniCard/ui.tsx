@@ -5,23 +5,42 @@ import styled from 'styled-components';
 
 const { Title, Text } = Typography;
 
-export const UserMiniCard: FC = () => {
+interface UserMiniCardProps {
+  firstName: string;
+  lastName: string;
+  username: string;
+}
+
+export const UserMiniCard: FC<UserMiniCardProps> = ({
+  firstName,
+  lastName,
+  username,
+}) => {
   return (
-    <StyledFlex align="center" style={{ padding: '7px' }} gap={10}>
+    <StyledFlex align="center" gap={10} flex={1}>
       <Avatar icon={<UserOutlined />} size="large" />
       <Flex vertical style={{ overflow: 'hidden' }}>
         <Title level={5} style={{ margin: 0 }} ellipsis>
-          Хартитонов Хераборачерт
+          {firstName} {lastName}
         </Title>
-        <Text ellipsis>@lolipop1331231231231231231237</Text>
+        <Text ellipsis>@{username}</Text>
       </Flex>
     </StyledFlex>
   );
 };
 
 const StyledFlex = styled(Flex)`
+  user-select: none;
+  padding: 7px;
+  cursor: pointer;
   max-width: 200px;
+  max-height: 46px;
+  transition: 0.3s;
   .ant-avatar {
     min-width: 40px;
+  }
+  &:hover {
+    box-shadow: inset 0 0 4px 4px lightgrey;
+    border-radius: 5px;
   }
 `;

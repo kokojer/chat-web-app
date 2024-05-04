@@ -40,7 +40,9 @@ export const Sidebar: FC = () => {
         />
         <Flex align="center" vertical gap={10}>
           <Avatar size={collapsed ? 32 : 96} icon={<UserOutlined />} />
-          <Name $hide={collapsed}>{userStore?.username}</Name>
+          <Name $hide={collapsed}>
+            {userStore?.firstName} {userStore?.lastName}
+          </Name>
         </Flex>
         <Flex vertical gap={10} flex={1}>
           {ROUTES_WITH_SIDEBAR.map((route) => (
@@ -90,4 +92,5 @@ const Name = styled(Typography)<{ $hide: boolean }>`
   max-height: 30px;
   transition: all 0.2s;
   opacity: ${({ $hide }) => ($hide ? '0' : '1')};
+  white-space: nowrap;
 `;

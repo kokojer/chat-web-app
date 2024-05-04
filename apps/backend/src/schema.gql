@@ -4,6 +4,8 @@
 
 type User {
   id: Int!
+  firstName: String!
+  lastName: String!
   username: String!
   password: String!
 }
@@ -15,6 +17,7 @@ type LoginResponse {
 
 type Query {
   getUser(id: Int!): User!
+  getUsersByOccurrences(nameOrUsername: String!): [User!]!
 }
 
 type Mutation {
@@ -32,6 +35,8 @@ input LoginUserInput {
 }
 
 input CreateUserInput {
+  firstName: String!
+  lastName: String!
   username: String!
   password: String!
 }
