@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { Button, Typography, notification } from 'antd';
 import { FC, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import IconPower from 'assets/power.svg?react';
@@ -16,6 +17,7 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
   sidebarCollapsed,
 }: LogoutButtonProps) => {
   const [logout, { error: logoutError }] = useMutation(LOGOUT);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!logoutError) return;
@@ -34,6 +36,7 @@ export const LogoutButton: FC<LogoutButtonProps> = ({
         await logout();
         localStorage.removeItem('accessToken');
         userInfo(undefined);
+        navigate('/');
       }}
     >
       <IconPower />

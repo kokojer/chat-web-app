@@ -5,9 +5,6 @@ import { User } from "./user.model";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
-/**
- * Resolves user object type.
- */
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}

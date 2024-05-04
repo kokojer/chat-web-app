@@ -3,6 +3,7 @@ import { setContext } from '@apollo/client/link/context';
 import { jwtDecode } from 'jwt-decode';
 
 import { gql } from '../../../__generated__';
+import { userInfo } from './globalVars.ts';
 
 export const REFRESH_TOKENS = gql(`mutation refreshTokens {
   refreshTokens {
@@ -19,18 +20,34 @@ const httpLink = new HttpLink({
   credentials: 'include',
 });
 
+let isRefreshTokenMutation = false;
+
 const authMiddleware = setContext(async () => {
   let accessToken = localStorage.getItem('accessToken');
 
-  if (accessToken) {
+  if (accessToken && !isRefreshTokenMutation) {
     const payloadJWT = jwtDecode(accessToken);
-    if (payloadJWT.exp && payloadJWT.exp * 1000 < +new Date()) {
-      const { data } = await client.mutate({
+    const isTokenExpired =
+      payloadJWT.exp && payloadJWT.exp * 1000 < +new Date();
+    if (isTokenExpired) {
+      isRefreshTokenMutation = true;
+
+      const { data, errors } = await client.mutate({
         mutation: REFRESH_TOKENS,
+        errorPolicy: 'all',
       });
+
+      isRefreshTokenMutation = false;
+
+      if (errors?.length) {
+        localStorage.removeItem('accessToken');
+        userInfo(undefined);
+        window.location.replace('/');
+      }
 
       if (data) accessToken = data?.refreshTokens.access_token;
     }
+
     return {
       headers: {
         authorization: `Bearer ${accessToken}`,
