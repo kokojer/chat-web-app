@@ -12,7 +12,8 @@ datasource db {
 
 model User {
   id              Int               @id @default(autoincrement())
-  firstName        String            @db.VarChar(30)
+  avatar          String?            @unique
+  firstName       String            @db.VarChar(30)
   lastName        String            @db.VarChar(30)
   username        String            @unique @db.VarChar(20)
   password        String

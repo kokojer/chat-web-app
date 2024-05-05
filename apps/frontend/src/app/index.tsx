@@ -18,7 +18,9 @@ const getUser = async (accessToken: string) => {
       id: payloadJWT.userId,
     },
   });
+
   userInfo({
+    avatar: data.getUser.avatar,
     userId: data.getUser.id,
     username: data.getUser.username,
     firstName: data.getUser.firstName,

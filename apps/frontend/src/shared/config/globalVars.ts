@@ -6,6 +6,7 @@ export enum TYPE_THEME {
 }
 
 export interface UserInfo {
+  avatar: string;
   userId: number;
   username: string;
   firstName: string;

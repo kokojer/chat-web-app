@@ -12,6 +12,8 @@ dist
 dist-ssr
 .turbo
 *.local
+apps/backend/.env
+apps/frontend/.env
 
 # Editor directories and files
 .vscode/*

@@ -94,6 +94,7 @@ export const Auth: FC = () => {
     localStorage.setItem('accessToken', loginData.login.access_token);
     userInfo({
       userId: loginData.login.user.userId,
+      avatar: loginData.login.user.avatar,
       username: loginData.login.user.username,
       firstName: loginData.login.user.firstName,
       lastName: loginData.login.user.lastName,
@@ -106,6 +107,7 @@ export const Auth: FC = () => {
     localStorage.setItem('accessToken', signupData.signup.access_token);
     userInfo({
       userId: signupData.signup.user.userId,
+      avatar: signupData.signup.user.avatar,
       username: signupData.signup.user.username,
       firstName: signupData.signup.user.firstName,
       lastName: signupData.signup.user.lastName,

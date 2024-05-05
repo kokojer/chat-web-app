@@ -6,9 +6,15 @@ import { join } from "path";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { ConfigModule } from "@nestjs/config";
+import configuration from "./config/configuration";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
     UserModule,
     AuthModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({

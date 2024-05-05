@@ -4,6 +4,7 @@
 
 type User {
   id: Int!
+  avatar: String
   firstName: String!
   lastName: String!
   username: String!
@@ -21,6 +22,10 @@ type Query {
 }
 
 type Mutation {
+  addUserImage(base64Image: String!, fileType: String!): String!
+
+  """Always return null"""
+  deleteUserImage: Boolean
   login(loginUserInput: LoginUserInput!): LoginResponse!
   signup(signupUserInput: CreateUserInput!): LoginResponse!
   refreshTokens: LoginResponse!

@@ -1,20 +1,16 @@
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { useReactiveVar } from '@apollo/client';
-import { Layout as AntdLayout, Avatar, Button, Flex, Typography } from 'antd';
+import { Layout as AntdLayout, Button, Flex, Typography } from 'antd';
 import { FC, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { Avatar } from 'entities/avatar';
+import { LogoutButton } from 'entities/logoutButton';
 import { SidebarButton } from 'entities/sidebarButton';
 
 import { userInfo } from 'shared/config/globalVars.ts';
 import { ROUTES_WITH_SIDEBAR } from 'shared/config/routes.ts';
-
-import { LogoutButton } from '../../../entities/logoutButton';
 
 const { Sider } = AntdLayout;
 
@@ -39,7 +35,7 @@ export const Sidebar: FC = () => {
           onClick={() => setCollapsed(!collapsed)}
         />
         <Flex align="center" vertical gap={10}>
-          <Avatar size={collapsed ? 32 : 96} icon={<UserOutlined />} />
+          <Avatar collapsed={collapsed} />
           <Name $hide={collapsed}>
             {userStore?.firstName} {userStore?.lastName}
           </Name>
@@ -90,6 +86,11 @@ const ShowSidebarButton = styled(Button)`
 const Name = styled(Typography)<{ $hide: boolean }>`
   font-size: 18px;
   max-height: 30px;
+  padding: 0 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  width: 100%;
   transition: all 0.2s;
   opacity: ${({ $hide }) => ($hide ? '0' : '1')};
   white-space: nowrap;

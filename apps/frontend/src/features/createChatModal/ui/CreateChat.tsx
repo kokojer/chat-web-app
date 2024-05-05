@@ -41,6 +41,7 @@ export const CreateChat: FC = () => {
     previousData?.getUsersByOccurrences,
     userStore?.username,
   ]);
+
   return (
     <>
       <StyledButton
@@ -73,13 +74,7 @@ export const CreateChat: FC = () => {
         />
         <StyledCardContainer>
           {foundUsers?.length ? (
-            foundUsers.map(({ firstName, lastName, username }) => (
-              <UserMiniCard
-                firstName={firstName}
-                lastName={lastName}
-                username={username}
-              />
-            ))
+            foundUsers.map((data) => <UserMiniCard data={data} />)
           ) : (
             <StyledNotFoundError>
               <WarningOutlined /> Users not found

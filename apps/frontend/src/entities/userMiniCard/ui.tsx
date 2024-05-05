@@ -6,19 +6,20 @@ import styled from 'styled-components';
 const { Title, Text } = Typography;
 
 interface UserMiniCardProps {
-  firstName: string;
-  lastName: string;
-  username: string;
+  data: {
+    firstName: string;
+    lastName: string;
+    username: string;
+    avatar?: string | null;
+  };
 }
 
 export const UserMiniCard: FC<UserMiniCardProps> = ({
-  firstName,
-  lastName,
-  username,
+  data: { firstName, lastName, username, avatar },
 }) => {
   return (
     <StyledFlex align="center" gap={10} flex={1}>
-      <Avatar icon={<UserOutlined />} size="large" />
+      <Avatar icon={<UserOutlined />} size="large" src={avatar} />
       <Flex vertical style={{ overflow: 'hidden' }}>
         <Title level={5} style={{ margin: 0 }} ellipsis>
           {firstName} {lastName}

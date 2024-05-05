@@ -13,7 +13,7 @@ const ChatPage = () => {
     <StyledContainer>
       <Flex flex="1 1 40%" vertical gap="30px">
         <Flex justify="space-between" align="center">
-          <Title>Chat</Title>
+          <Title>Chats</Title>
           <CreateChat />
         </Flex>
         <SearchChats />

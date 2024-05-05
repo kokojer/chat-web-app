@@ -44,14 +44,18 @@ const GlobalStyle = createGlobalStyle`
     /* Handle */
 
     &::-webkit-scrollbar-thumb {
-        background: ${({ theme }) => theme.base.scrollbar.thumb};;
+        background: ${({ theme }) => theme.base.scrollbar.thumb};
         border-radius: 5px;
     }
 
     /* Handle on hover */
 
     &::-webkit-scrollbar-thumb:hover {
-        background: ${({ theme }) => theme.base.scrollbar.thumbHover};;
+        background: ${({ theme }) => theme.base.scrollbar.thumbHover};
+    }
+    
+    .img-crop-control button{
+        color: ${({ theme }) => theme.base.typography.text};
     }
 `;
 
