@@ -19,7 +19,7 @@ const documents = {
     "\n  mutation logout {\n    logout\n  }\n": types.LogoutDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    login(loginUserInput: { username: $username, password: $password }) {\n      user {\n        avatar,\n        username,\n        userId: id,\n        firstName,\n        lastName\n      }\n      access_token\n    }\n  }\n": types.LoginDocument,
     "\n  mutation signup($firstName: String!,$lastName: String!, $username: String!, $password: String!) {\n    signup(signupUserInput: { firstName: $firstName, lastName:$lastName, username: $username, password: $password }) {\n      user {\n        avatar,\n        username\n        userId: id,\n        firstName,\n        lastName\n      }\n      access_token\n    }\n}\n": types.SignupDocument,
-    "\n  query getUserByOccurrences($nameOrUsername: String!) {\n    getUsersByOccurrences(nameOrUsername: $nameOrUsername) {\n      avatar,\n      firstName,\n      lastName,\n      username,\n      userId: id\n    }\n  }\n": types.GetUserByOccurrencesDocument,
+    "\n  query getUserByOccurrences($nameOrUsername: String!, $page: Int!) {\n    getUsersByOccurrences(nameOrUsername: $nameOrUsername, page: $page) {\n      avatar,\n      firstName,\n      lastName,\n      username,\n      userId: id\n    }\n  }\n": types.GetUserByOccurrencesDocument,
     "mutation refreshTokens {\n  refreshTokens {\n    user {\n      username\n      userId: id\n    }\n    access_token\n  }\n}": types.RefreshTokensDocument,
 };
 
@@ -64,7 +64,7 @@ export function gql(source: "\n  mutation signup($firstName: String!,$lastName: 
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query getUserByOccurrences($nameOrUsername: String!) {\n    getUsersByOccurrences(nameOrUsername: $nameOrUsername) {\n      avatar,\n      firstName,\n      lastName,\n      username,\n      userId: id\n    }\n  }\n"): (typeof documents)["\n  query getUserByOccurrences($nameOrUsername: String!) {\n    getUsersByOccurrences(nameOrUsername: $nameOrUsername) {\n      avatar,\n      firstName,\n      lastName,\n      username,\n      userId: id\n    }\n  }\n"];
+export function gql(source: "\n  query getUserByOccurrences($nameOrUsername: String!, $page: Int!) {\n    getUsersByOccurrences(nameOrUsername: $nameOrUsername, page: $page) {\n      avatar,\n      firstName,\n      lastName,\n      username,\n      userId: id\n    }\n  }\n"): (typeof documents)["\n  query getUserByOccurrences($nameOrUsername: String!, $page: Int!) {\n    getUsersByOccurrences(nameOrUsername: $nameOrUsername, page: $page) {\n      avatar,\n      firstName,\n      lastName,\n      username,\n      userId: id\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

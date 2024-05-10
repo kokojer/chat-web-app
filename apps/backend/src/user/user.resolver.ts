@@ -22,8 +22,10 @@ export class UserResolver {
   async getUsersByOccurrences(
     @Args("nameOrUsername", { type: () => String })
     nameOrUsername: string,
+    @Args("page", { type: () => Int })
+    page: number,
   ) {
-    return this.userService.getUsersByOccurrences({ nameOrUsername });
+    return this.userService.getUsersByOccurrences({ nameOrUsername, page });
   }
 
   @Mutation(() => String)

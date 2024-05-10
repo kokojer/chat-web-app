@@ -2,12 +2,14 @@ import { PlusOutlined, WarningOutlined } from '@ant-design/icons';
 import { useQuery } from '@apollo/client';
 import { Button, Input, Modal, Typography } from 'antd';
 import { FC, useMemo, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import styled from 'styled-components';
 
 import { UserMiniCard } from 'entities/userMiniCard';
 
 import { userInfo } from 'shared/config/globalVars.ts';
 
+import { GetUserByOccurrencesQuery } from '../../../../__generated__/graphql.ts';
 import { GET_USERS_BY_OCCURRENCES } from '../api.ts';
 
 const { Title } = Typography;
@@ -21,27 +23,31 @@ const modalStyles = {
 export const CreateChat: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [page, setPage] = useState(0);
   const { data, previousData } = useQuery(GET_USERS_BY_OCCURRENCES, {
     variables: {
       nameOrUsername: searchValue,
+      page,
     },
   });
 
+  const [users, setUsers] = useState<
+    GetUserByOccurrencesQuery['getUsersByOccurrences']
+  >([]);
+
   const userStore = userInfo();
   const foundUsers = useMemo(() => {
-    const actualFilteredUsers = data?.getUsersByOccurrences.filter(
+    const firstData = data && data?.getUsersByOccurrences;
+    const actualUsers = users?.length ? users : firstData;
+    const actualFilteredUsers = actualUsers?.filter(
       (user) => userStore?.username !== user.username,
     );
+
     const previousFilteredUsers = previousData?.getUsersByOccurrences.filter(
       (user) => userStore?.username !== user.username,
     );
     return actualFilteredUsers ?? previousFilteredUsers;
-  }, [
-    data?.getUsersByOccurrences,
-    previousData?.getUsersByOccurrences,
-    userStore?.username,
-  ]);
-
+  }, [data, previousData?.getUsersByOccurrences, userStore?.username, users]);
   return (
     <>
       <StyledButton
@@ -70,17 +76,34 @@ export const CreateChat: FC = () => {
           size="large"
           style={{ marginBottom: '10px' }}
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+            setPage(0);
+            setUsers([]);
+          }}
         />
-        <StyledCardContainer>
-          {foundUsers?.length ? (
-            foundUsers.map((data) => <UserMiniCard data={data} />)
-          ) : (
-            <StyledNotFoundError>
-              <WarningOutlined /> Users not found
-            </StyledNotFoundError>
-          )}
-        </StyledCardContainer>
+        <StyledScrollContainer id="scrollableDiv">
+          <InfiniteScroll
+            dataLength={users.length}
+            next={() => {
+              setPage((prevState) => prevState + 1);
+              setUsers((prev) =>
+                data ? [...prev, ...data.getUsersByOccurrences] : prev,
+              );
+            }}
+            hasMore
+            loader={''}
+            scrollableTarget="scrollableDiv"
+          >
+            {foundUsers?.length ? (
+              foundUsers.map((data) => <UserMiniCard data={data} />)
+            ) : (
+              <StyledNotFoundError>
+                <WarningOutlined /> Users not found
+              </StyledNotFoundError>
+            )}
+          </InfiniteScroll>
+        </StyledScrollContainer>
       </StyledModal>
     </>
   );
@@ -111,14 +134,17 @@ const StyledModal = styled(Modal)`
   }
 `;
 
-const StyledCardContainer = styled.div`
+const StyledScrollContainer = styled.div`
+  height: 300px;
+  overflow-x: hidden;
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: repeat(auto-fill, 60px);
-  height: 320px;
-  width: calc(100% + 10px);
-  overflow: auto;
+  .infinite-scroll-component {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: repeat(auto-fill, 60px);
+    height: 320px;
+    width: calc(100% + 10px);
+  }
 `;
 
 const StyledNotFoundError = styled.div`

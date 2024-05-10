@@ -18,7 +18,7 @@ type LoginResponse {
 
 type Query {
   getUser(id: Int!): User!
-  getUsersByOccurrences(nameOrUsername: String!): [User!]!
+  getUsersByOccurrences(nameOrUsername: String!, page: Int!): [User!]!
 }
 
 type Mutation {

@@ -13,6 +13,8 @@ import { v4 as uuid } from "uuid";
 import { GraphQLError } from "graphql/error";
 const urlJoin = require("url-join");
 
+const countToTake = 30;
+
 @Injectable()
 export class UserService {
   constructor(
@@ -27,7 +29,7 @@ export class UserService {
     });
   }
 
-  async getUsersByOccurrences({ nameOrUsername }): Promise<User[]> {
+  async getUsersByOccurrences({ nameOrUsername, page }): Promise<User[]> {
     const itsLogin = nameOrUsername.startsWith("@");
     const where: Prisma.UserWhereInput = itsLogin
       ? {
@@ -74,7 +76,11 @@ export class UserService {
             },
           ],
         };
-    return this.prisma.client.user.findMany({ where });
+    return this.prisma.client.user.findMany({
+      where,
+      skip: page * countToTake,
+      take: countToTake,
+    });
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
