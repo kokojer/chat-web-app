@@ -40,7 +40,7 @@ const MainWrapper = styled(AntdLayout)`
 
 const ContentWrapper = styled(Content)`
   display: flex;
-  min-height: 100vh;
-  padding: 50px;
+  max-height: 100vh;
+  padding: 50px 50px 20px 50px;
   position: relative;
 `;

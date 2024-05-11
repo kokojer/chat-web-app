@@ -21,6 +21,7 @@ const GlobalStyle = createGlobalStyle`
         display: flex;
         font-family: 'TTNorms', 'serif';
         font-weight: 500;
+        //overflow: hidden;
     }
 
     #root {

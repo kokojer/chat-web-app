@@ -128,7 +128,7 @@ export class UserService {
     });
 
     await client.send(command).catch((err) => {
-      throw new GraphQLError("Error when saving image!");
+      throw new GraphQLError(`Error when saving image!\n ${err}`);
     });
 
     const user = await this.prisma.user.findFirst({

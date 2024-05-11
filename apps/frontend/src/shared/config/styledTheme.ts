@@ -26,7 +26,7 @@ export const darkStyledTheme = {
     inActiveText: '#707C97',
   },
   background: {
-    main: 'rgb(6,14,19)',
+    main: 'rgb(32,32,66)',
     light: 'rgb(12,12,33)',
     primary: '#E6ECFE',
   },

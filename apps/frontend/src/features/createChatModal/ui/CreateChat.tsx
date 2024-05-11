@@ -121,7 +121,7 @@ const StyledButton = styled(Button)`
   &&&:hover {
     color: white;
     background: linear-gradient(90deg, #7cb8f7, #2a8bf2);
-    box-shadow: 0 0 10px 10px ${({ theme }) => theme.base.boxShadow};
+    box-shadow: 0 0 7px 5px ${({ theme }) => theme.base.boxShadow};
   }
 `;
 

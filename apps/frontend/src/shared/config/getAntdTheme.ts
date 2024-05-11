@@ -15,6 +15,9 @@ export const getAntdTheme = (
       fontSize: 11,
       labelFontSize: 14,
     },
+    Input: {
+      colorBgContainer: theme.background.main,
+    },
   },
   algorithm:
     themeType === TYPE_THEME.DARK
