@@ -98,6 +98,7 @@ const StyledContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding-bottom: 10px;
   }
 `;
 
