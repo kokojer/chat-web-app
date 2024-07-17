@@ -92,8 +92,7 @@ const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow: clip;
-  overflow-clip-margin: 20px;
+  overflow: hidden;
   .ant-list-items {
     display: flex;
     flex-direction: column;
@@ -105,5 +104,4 @@ const StyledContainer = styled.div`
 const ScrollableDiv = styled.div`
   overflow: auto;
   padding-right: 14px;
-  width: calc(100% + 20px);
 `;

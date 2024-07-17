@@ -112,10 +112,14 @@ const StyledImageContainer = styled.div<{ $collapsed: boolean }>`
   }
   .ant-upload-wrapper.ant-upload-picture-circle-wrapper
     .ant-upload-list.ant-upload-list-picture-circle {
+    .ant-upload,
     .ant-upload-list-item-container {
       transition: 0.2s;
       width: ${({ $collapsed }) => ($collapsed ? '32px' : '96px')};
       height: ${({ $collapsed }) => ($collapsed ? '32px' : '96px')};
+      .anticon-upload {
+        display: ${({ $collapsed }) => ($collapsed ? 'none' : 'block')};
+      }
     }
     .ant-upload-list-item::before {
       width: 100%;
