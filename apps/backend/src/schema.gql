@@ -16,9 +16,42 @@ type LoginResponse {
   user: User!
 }
 
+type Chat {
+  id: Int!
+  type: String!
+  ChatMembers: [ChatMembers!]!
+}
+
+type ChatMembers {
+  id: Int!
+  chatId: Int!
+  userId: Int!
+  Chat: Chat!
+  User: User!
+}
+
+type Message {
+  id: Int!
+  chatId: Int!
+  userId: Int!
+  Chat: Chat!
+  User: User!
+  MessageContent: [MessageContent!]!
+}
+
+type MessageContent {
+  id: Int!
+  messageId: Int!
+  type: String!
+  content: String!
+  Message: Message!
+}
+
 type Query {
   getUser(id: Int!): User!
   getUsersByOccurrences(nameOrUsername: String!, page: Int!): [User!]!
+  getChat(id: Int!): Chat!
+  getChatsForUser(userId: Int!): [Chat!]!
 }
 
 type Mutation {
@@ -32,6 +65,8 @@ type Mutation {
 
   """Always return null"""
   logout: Boolean
+  createChat(userIds: [Int!]!): Chat!
+  addMessage(createMessageInput: CreateMessageInput!): Message!
 }
 
 input LoginUserInput {
@@ -44,4 +79,13 @@ input CreateUserInput {
   lastName: String!
   username: String!
   password: String!
+}
+
+input CreateMessageInput {
+  chatId: Int!
+  text: String!
+}
+
+type Subscription {
+  messageAdded(chatId: Int!): Message!
 }

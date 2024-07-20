@@ -8,6 +8,10 @@ import { AuthModule } from "./auth/auth.module";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { ConfigModule } from "@nestjs/config";
 import configuration from "./config/configuration";
+import { ChatModule } from "./chat/chat.module";
+import { MessageModule } from "./message/message.module";
+import { Context } from "graphql-ws";
+import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 
 @Module({
   imports: [
@@ -17,11 +21,29 @@ import configuration from "./config/configuration";
     }),
     UserModule,
     AuthModule,
+    ChatModule,
+    MessageModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       context: (req: FastifyRequest, res: FastifyReply) => {
         return { req, res };
+      },
+      installSubscriptionHandlers: true,
+      subscriptions: {
+        "subscriptions-transport-ws": {
+          onConnect: (connectionParams, ...args) => {
+            return {
+              req: {
+                headers: {
+                  authorization:
+                    connectionParams.Authorization ??
+                    connectionParams.authorization,
+                },
+              },
+            };
+          },
+        },
       },
       playground: {
         settings: {

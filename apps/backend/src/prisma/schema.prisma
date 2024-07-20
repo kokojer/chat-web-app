@@ -12,12 +12,46 @@ datasource db {
 
 model User {
   id              Int               @id @default(autoincrement())
-  avatar          String?            @unique
+  avatar          String?           @unique
   firstName       String            @db.VarChar(30)
   lastName        String            @db.VarChar(30)
   username        String            @unique @db.VarChar(20)
   password        String
   Refresh_session Refresh_session[]
+  Message         Message[]
+  ChatMembers     ChatMembers[]
+}
+
+model Message {
+  id             Int              @id @default(autoincrement())
+  chatId         Int
+  userId         Int
+  User           User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  MessageContent MessageContent[]
+  Chat           Chat?            @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model MessageContent {
+  id        Int      @id @default(autoincrement())
+  messageId Int
+  Message   Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  type      String
+  content   String
+}
+
+model Chat {
+  id          Int           @id @default(autoincrement())
+  type        String        @default("personal")
+  ChatMembers ChatMembers[]
+  Message     Message[]
+}
+
+model ChatMembers {
+  id     Int   @id @default(autoincrement())
+  chatId Int
+  userId Int
+  Chat   Chat? @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  User   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Refresh_session {

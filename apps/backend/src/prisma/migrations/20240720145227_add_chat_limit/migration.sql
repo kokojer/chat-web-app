@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Chat" ADD COLUMN     "usersLimit" INTEGER NOT NULL DEFAULT 2;

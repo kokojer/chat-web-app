@@ -13,6 +13,7 @@ const server = async () => {
     // Для увесистой картинки в base64 формате
     new FastifyAdapter({ bodyLimit: 3 * 1024 * 1024 }),
   );
+
   await app.register(fastifyCookie, {
     secret: process.env.SECRET_KEY,
   });

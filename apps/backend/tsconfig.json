@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "CommonJS",
-    "types": ["node", "@types/node"],
+    "types": ["node", "@types/node", "./src/types/fastify.d.ts"],
     "declaration": true,
     "composite": true,
     "outDir": "./dist",
@@ -12,7 +12,7 @@
     "target": "ESNext",
     "sourceMap": true,
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "include": [
     "src",
