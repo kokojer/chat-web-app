@@ -65,7 +65,7 @@ type Mutation {
 
   """Always return null"""
   logout: Boolean
-  createChat(userIds: [Int!]!): Chat!
+  createChat(userId: Int!): Chat!
   addMessage(createMessageInput: CreateMessageInput!): Message!
 }
 

@@ -96,7 +96,9 @@ export const CreateChat: FC = () => {
             scrollableTarget="scrollableDiv"
           >
             {foundUsers?.length ? (
-              foundUsers.map((data) => <UserMiniCard data={data} />)
+              foundUsers.map((data) => (
+                <UserMiniCard data={data} key={data.userId} />
+              ))
             ) : (
               <StyledNotFoundError>
                 <WarningOutlined /> Users not found

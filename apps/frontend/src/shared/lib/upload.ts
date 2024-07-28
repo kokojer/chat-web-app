@@ -11,16 +11,18 @@ export const getBase64 = (file: FileType): Promise<string> => {
   });
 };
 
-const allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml'];
+const allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/gif'];
 
 export const beforeUpload = (file: FileType) => {
-  const isJpgOrPngOrSvg = allowedTypes.includes(file.type);
-  if (!isJpgOrPngOrSvg) message.error('You can only upload JPG/PNG/SVG file!');
+  console.log(file.type);
+  const isAllowedImageFormat = allowedTypes.includes(file.type);
+  if (!isAllowedImageFormat)
+    message.error('You can only upload JPG/PNG/SVG/GIF file!');
 
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) message.error('Image must smaller than 2MB!');
 
-  return isJpgOrPngOrSvg && isLt2M;
+  return isAllowedImageFormat && isLt2M;
 };
 
 export const getDefaultFile = (url?: string): UploadFile => ({

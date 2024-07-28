@@ -17,6 +17,7 @@ const documents = {
     "\n  mutation addImage($base64Image: String!, $fileType: String!) {\n    addUserImage(base64Image: $base64Image, fileType: $fileType)\n  }\n": types.AddImageDocument,
     "\n  mutation deleteImage {\n    deleteUserImage\n  }\n": types.DeleteImageDocument,
     "\n  mutation logout {\n    logout\n  }\n": types.LogoutDocument,
+    "\n mutation createChat($userId: Int!) {\n  createChat(userId: $userId) {\n    ChatMembers{\n      User{\n        username\n      }\n    }\n  }\n}\n": types.CreateChatDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    login(loginUserInput: { username: $username, password: $password }) {\n      user {\n        avatar,\n        username,\n        userId: id,\n        firstName,\n        lastName\n      }\n      access_token\n    }\n  }\n": types.LoginDocument,
     "\n  mutation signup($firstName: String!,$lastName: String!, $username: String!, $password: String!) {\n    signup(signupUserInput: { firstName: $firstName, lastName:$lastName, username: $username, password: $password }) {\n      user {\n        avatar,\n        username\n        userId: id,\n        firstName,\n        lastName\n      }\n      access_token\n    }\n}\n": types.SignupDocument,
     "\n  query getUserByOccurrences($nameOrUsername: String!, $page: Int!) {\n    getUsersByOccurrences(nameOrUsername: $nameOrUsername, page: $page) {\n      avatar,\n      firstName,\n      lastName,\n      username,\n      userId: id\n    }\n  }\n": types.GetUserByOccurrencesDocument,
@@ -53,6 +54,10 @@ export function gql(source: "\n  mutation deleteImage {\n    deleteUserImage\n  
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  mutation logout {\n    logout\n  }\n"): (typeof documents)["\n  mutation logout {\n    logout\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n mutation createChat($userId: Int!) {\n  createChat(userId: $userId) {\n    ChatMembers{\n      User{\n        username\n      }\n    }\n  }\n}\n"): (typeof documents)["\n mutation createChat($userId: Int!) {\n  createChat(userId: $userId) {\n    ChatMembers{\n      User{\n        username\n      }\n    }\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -10,7 +10,7 @@ import { LogoutButton } from 'entities/logoutButton';
 import { SidebarButton } from 'entities/sidebarButton';
 
 import { userInfo } from 'shared/config/globalVars.ts';
-import { ROUTES_WITH_SIDEBAR } from 'shared/config/routes.ts';
+import { SIDEBAR_ROUTES } from 'shared/config/routes.ts';
 
 const { Sider } = AntdLayout;
 
@@ -41,7 +41,7 @@ export const Sidebar: FC = () => {
           </Name>
         </Flex>
         <Flex vertical gap={10} flex={1}>
-          {ROUTES_WITH_SIDEBAR.map((route) => (
+          {SIDEBAR_ROUTES.map((route) => (
             <SidebarButton
               route={route.pathname}
               key={route.pathname}

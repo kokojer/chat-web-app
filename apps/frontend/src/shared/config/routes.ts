@@ -1,6 +1,12 @@
 import IconChat from 'assets/icon-chat.svg?react';
 
-export const ROUTES_WITH_SIDEBAR = [
+export enum CHAT_ROUTES {
+  MAIN = '/',
+  AUTH = '/auth',
+  CHAT = '/chat/:id',
+}
+
+export const SIDEBAR_ROUTES = [
   {
     pathname: '/',
     text: 'Chat',

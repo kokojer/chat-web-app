@@ -20,6 +20,9 @@ model User {
   Refresh_session Refresh_session[]
   Message         Message[]
   ChatMembers     ChatMembers[]
+  lastVisitTime   DateTime?
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 }
 
 model Message {
@@ -29,6 +32,15 @@ model Message {
   User           User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
   MessageContent MessageContent[]
   Chat           Chat?            @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+}
+
+model pubsub_payloads {
+  id             Int              @id @default(autoincrement())
+  trigger         String
+  payload         Json
+  createdAt    DateTime @default(now())
 }
 
 model MessageContent {
@@ -37,6 +49,8 @@ model MessageContent {
   Message   Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
   type      String
   content   String
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 }
 
 model Chat {
@@ -44,6 +58,8 @@ model Chat {
   type        String        @default("personal")
   ChatMembers ChatMembers[]
   Message     Message[]
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 }
 
 model ChatMembers {
@@ -52,6 +68,8 @@ model ChatMembers {
   userId Int
   Chat   Chat? @relation(fields: [chatId], references: [id], onDelete: Cascade)
   User   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 }
 
 model Refresh_session {
@@ -61,6 +79,7 @@ model Refresh_session {
   userAgent    String   @db.VarChar(200)
   ip           String   @db.VarChar(15)
   expiresIn    BigInt
+  updatedAt    DateTime @updatedAt
   createdAt    DateTime @default(now())
   User         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

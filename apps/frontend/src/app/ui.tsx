@@ -9,16 +9,17 @@ import { Sidebar } from 'features/sidebar';
 import { ThemeSwitcher } from 'entities/themeSwitcher';
 
 import { userInfo } from '../shared/config/globalVars.ts';
-import { ROUTES_WITH_SIDEBAR } from '../shared/config/routes.ts';
+import { CHAT_ROUTES } from '../shared/config/routes.ts';
 
 const { Content } = AntdLayout;
 
 const Layout: FC<PropsWithChildren> = ({ children }) => {
   const { pathname } = useLocation();
   const userStore = useReactiveVar(userInfo);
-  const showSidebar = ROUTES_WITH_SIDEBAR.some(
-    (route) => route.pathname === pathname,
-  );
+  const showSidebar = Object.values(CHAT_ROUTES).some((route) => {
+    const regex = new RegExp(`^${route.replace(/:.+(?=\/|$)/i, '.+')}$`);
+    return regex.test(pathname);
+  });
 
   return (
     <MainWrapper>

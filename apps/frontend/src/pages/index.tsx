@@ -13,6 +13,10 @@ const Routing = () => {
   return (
     <Routes>
       <Route path="/" element={userStore ? <ChatPage /> : <AuthPage />} />
+      <Route
+        path="/chat/:id"
+        element={userStore ? <ChatPage /> : <AuthPage />}
+      />
       <Route path="/auth" element={<AuthPage />} />
       <Route path="*" element={<ErrorPage />} />
     </Routes>

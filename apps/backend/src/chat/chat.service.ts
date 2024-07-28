@@ -14,6 +14,10 @@ export type IncludedChat = Prisma.ChatGetPayload<{
   };
 }>;
 
+enum CHAT_TYPES {
+  PERSONAL = "personal",
+}
+
 @Injectable()
 export class ChatService {
   constructor(private prisma: PrismaService) {}
@@ -77,14 +81,19 @@ export class ChatService {
     }
   }
 
-  async createChat(userIds: number[]): Promise<IncludedChat> {
-    if (userIds[0] === userIds[1]) throw new GraphQLError(`Users are same!`);
-    if (userIds.length > 2) throw new GraphQLError(`Only personal chats!`);
-
+  async createChat(
+    myUserId: number,
+    interlocutorId: number,
+  ): Promise<IncludedChat> {
+    const userIds = [myUserId, interlocutorId];
     await this.checkIfUsersExists(userIds);
     await this.checkIfChatsExists(userIds);
 
-    const chat = await this.prisma.chat.create({});
+    const chat = await this.prisma.chat.create({
+      data: {
+        type: CHAT_TYPES.PERSONAL,
+      },
+    });
 
     await this.prisma.chatMembers.createMany({
       data: userIds.map((userId) => ({ userId, chatId: chat.id })),
