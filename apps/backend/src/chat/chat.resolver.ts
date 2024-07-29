@@ -19,13 +19,22 @@ export class ChatResolver {
   }
 
   @Query(() => Chat)
-  // @UseGuards(JwtAuthGuard)
-  async getChat(@Args("id", { type: () => Int }) id: number) {
+  @UseGuards(JwtAuthGuard)
+  async getChat(
+    @Args("id", { type: () => Int }) id: number,
+    @Context() { req }: { req: FastifyRequest },
+  ) {
+    await this.chatService.checkIfHavePermissionToChat(req.user.userId, id);
+
     return await this.chatService.getChat(id);
   }
+
   @Query(() => [Chat])
-  // @UseGuards(JwtAuthGuard)
-  async getChatsForUser(@Args("userId", { type: () => Int }) userId: number) {
+  @UseGuards(JwtAuthGuard)
+  async getChatsForUser(
+    @Args("userId", { type: () => Int }) userId: number,
+    @Args("page", { type: () => Int }) page: number,
+  ) {
     return await this.chatService.getChatsForUser(userId);
   }
 }

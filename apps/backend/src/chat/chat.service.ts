@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { Chat, Message, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { GraphQLError } from "graphql/error";
-import { JwtService } from "@nestjs/jwt";
 
 export type IncludedChat = Prisma.ChatGetPayload<{
   include: {
@@ -103,7 +102,7 @@ export class ChatService {
   }
 
   async getChat(id: number): Promise<IncludedChat> {
-    const chat = await this.prisma.chat.findUnique({
+    const chat = await this.prisma.client.chat.findUnique({
       include: {
         ChatMembers: {
           include: {
@@ -134,6 +133,11 @@ export class ChatService {
         ChatMembers: {
           include: {
             User: true,
+          },
+        },
+        Message: {
+          include: {
+            MessageContent: true,
           },
         },
       },

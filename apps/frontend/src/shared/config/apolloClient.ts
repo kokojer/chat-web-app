@@ -1,5 +1,14 @@
-import { ApolloClient, HttpLink, InMemoryCache, concat } from '@apollo/client';
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  concat,
+  split,
+} from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { createClient } from 'graphql-ws';
 import { jwtDecode } from 'jwt-decode';
 
 import { gql } from '../../../__generated__';
@@ -19,6 +28,16 @@ const httpLink = new HttpLink({
   uri: import.meta.env.API_BASE_URL,
   credentials: 'include',
 });
+
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: 'ws://localhost:4001/graphql',
+    connectionParams: () => ({
+      authToken: `Bearer ${localStorage.getItem('accessToken')}`,
+      userId: userInfo()?.userId,
+    }),
+  }),
+);
 
 let isRefreshTokenMutation = false;
 
@@ -43,6 +62,8 @@ const authMiddleware = setContext(async () => {
         localStorage.removeItem('accessToken');
         userInfo(undefined);
         window.location.replace('/');
+      } else if (data?.refreshTokens.access_token) {
+        localStorage.setItem('accessToken', data?.refreshTokens.access_token);
       }
 
       if (data) accessToken = data?.refreshTokens.access_token;
@@ -56,9 +77,21 @@ const authMiddleware = setContext(async () => {
   }
 });
 
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  concat(authMiddleware, httpLink),
+);
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: concat(authMiddleware, httpLink),
+  link: splitLink,
 });
 
 export default client;

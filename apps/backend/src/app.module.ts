@@ -29,20 +29,9 @@ import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
       context: (req: FastifyRequest, res: FastifyReply) => {
         return { req, res };
       },
-      installSubscriptionHandlers: true,
       subscriptions: {
-        "subscriptions-transport-ws": {
-          onConnect: (connectionParams, ...args) => {
-            return {
-              req: {
-                headers: {
-                  authorization:
-                    connectionParams.Authorization ??
-                    connectionParams.authorization,
-                },
-              },
-            };
-          },
+        "graphql-ws": {
+          path: "/graphql",
         },
       },
       playground: {

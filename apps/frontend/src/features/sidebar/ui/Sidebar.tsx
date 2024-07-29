@@ -47,7 +47,7 @@ export const Sidebar: FC = () => {
               key={route.pathname}
               buttonText={route.text}
               Icon={route.icon}
-              active={route.pathname === pathname}
+              active={pathname.startsWith(route.pathname)}
               sidebarCollapsed={collapsed}
             />
           ))}

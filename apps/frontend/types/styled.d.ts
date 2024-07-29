@@ -15,6 +15,8 @@ declare module 'styled-components' {
         main: string;
         light: string;
         primary: string;
+        messagePrimary: string;
+        messageSecondary: string;
       };
       boxShadow: string;
       scrollbar: {

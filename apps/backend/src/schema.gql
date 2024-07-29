@@ -9,25 +9,19 @@ type User {
   lastName: String!
   username: String!
   password: String!
+  lastVisitTime: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 type LoginResponse {
   access_token: String!
   user: User!
-}
-
-type Chat {
-  id: Int!
-  type: String!
-  ChatMembers: [ChatMembers!]!
-}
-
-type ChatMembers {
-  id: Int!
-  chatId: Int!
-  userId: Int!
-  Chat: Chat!
-  User: User!
 }
 
 type Message {
@@ -37,6 +31,8 @@ type Message {
   Chat: Chat!
   User: User!
   MessageContent: [MessageContent!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type MessageContent {
@@ -45,13 +41,35 @@ type MessageContent {
   type: String!
   content: String!
   Message: Message!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Chat {
+  id: Int!
+  type: String!
+  ChatMembers: [ChatMembers!]!
+  Message: [Message!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ChatMembers {
+  id: Int!
+  chatId: Int!
+  userId: Int!
+  Chat: Chat!
+  User: User!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Query {
   getUser(id: Int!): User!
   getUsersByOccurrences(nameOrUsername: String!, page: Int!): [User!]!
   getChat(id: Int!): Chat!
-  getChatsForUser(userId: Int!): [Chat!]!
+  getChatsForUser(userId: Int!, page: Int!): [Chat!]!
+  getChatMessages(chatId: Int!, page: Int!): [Message!]!
 }
 
 type Mutation {

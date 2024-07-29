@@ -9,6 +9,8 @@ export const lightStyledTheme = {
     main: '#FFFFFF',
     light: '#FAFBFF',
     primary: '#E6ECFE',
+    messagePrimary: '#96c0ee',
+    messageSecondary: '#d7e8f6',
   },
   boxShadow: 'rgba(46, 46, 162, 0.2)',
   scrollbar: {
@@ -29,6 +31,8 @@ export const darkStyledTheme = {
     main: 'rgb(32,32,66)',
     light: 'rgb(12,12,33)',
     primary: '#E6ECFE',
+    messagePrimary: '#0c447c',
+    messageSecondary: '#494875',
   },
   boxShadow: 'rgba(128,125,125,0.25)',
   scrollbar: {

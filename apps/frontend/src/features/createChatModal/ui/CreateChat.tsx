@@ -24,6 +24,7 @@ export const CreateChat: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [page, setPage] = useState(0);
+
   const { data, previousData } = useQuery(GET_USERS_BY_OCCURRENCES, {
     variables: {
       nameOrUsername: searchValue,
@@ -97,7 +98,11 @@ export const CreateChat: FC = () => {
           >
             {foundUsers?.length ? (
               foundUsers.map((data) => (
-                <UserMiniCard data={data} key={data.userId} />
+                <UserMiniCard
+                  data={data}
+                  key={data.userId}
+                  setIsModalOpen={setIsModalOpen}
+                />
               ))
             ) : (
               <StyledNotFoundError>

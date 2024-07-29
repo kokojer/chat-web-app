@@ -3,6 +3,7 @@ import {
   Context,
   Int,
   Mutation,
+  Query,
   Resolver,
   Subscription,
 } from "@nestjs/graphql";
@@ -14,6 +15,9 @@ import { UnauthorizedException, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { FastifyRequest } from "fastify";
 import { ChatService } from "../chat/chat.service";
+import { JwtService } from "@nestjs/jwt";
+import { WsAuthGuard } from "../auth/guards/ws-auth.guard";
+import { User } from "../user/user.model";
 
 @Resolver(() => Message)
 export class MessageResolver {
@@ -27,12 +31,8 @@ export class MessageResolver {
       payload.messageAdded.chatId === variables.chatId,
   })
   @UseGuards(JwtAuthGuard)
-  async messageAdded(
-    @Args("chatId", { type: () => Int }) chatId: number,
-    @Context() { req }: { req: FastifyRequest },
-  ) {
-    await this.chatService.checkIfHavePermissionToChat(req.user.userId, chatId);
-
+  @UseGuards(WsAuthGuard)
+  async messageAdded(@Args("chatId", { type: () => Int }) chatId: number) {
     return pubSub.asyncIterator(`messageAdded_${chatId}`);
   }
 
@@ -53,5 +53,19 @@ export class MessageResolver {
     });
 
     return newMessage;
+  }
+
+  @Query(() => [Message])
+  @UseGuards(JwtAuthGuard)
+  async getChatMessages(
+    @Args("chatId", { type: () => Int })
+    chatId: number,
+    @Args("page", { type: () => Int })
+    page: number,
+    @Context() { req }: { req: FastifyRequest },
+  ) {
+    await this.chatService.checkIfHavePermissionToChat(req.user.userId, chatId);
+
+    return this.messageService.getChatMessages(chatId, page);
   }
 }

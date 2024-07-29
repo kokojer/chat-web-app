@@ -1,7 +1,8 @@
 import { UserOutlined } from '@ant-design/icons';
-import { useMutation } from '@apollo/client';
-import { Avatar, Flex, Typography } from 'antd';
-import { FC } from 'react';
+import { ApolloError, useMutation } from '@apollo/client';
+import { Avatar, Flex, Typography, notification } from 'antd';
+import { Dispatch, FC, SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { CREATE_CHAT } from './api.ts';
@@ -16,19 +17,37 @@ interface UserMiniCardProps {
     avatar?: string | null;
     userId: number;
   };
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export const UserMiniCard: FC<UserMiniCardProps> = ({
   data: { firstName, lastName, username, avatar, userId },
+  setIsModalOpen,
 }) => {
   const [createChat] = useMutation(CREATE_CHAT);
+  const navigate = useNavigate();
   return (
     <StyledFlex
       align="center"
       gap={10}
       flex={1}
       onClick={async () => {
-        await createChat({ variables: { userId } });
+        try {
+          const chat = await createChat({ variables: { userId } });
+          navigate(`/chat/${chat.data?.createChat.id}`);
+          setIsModalOpen(false);
+        } catch (err) {
+          if (err instanceof ApolloError) {
+            notification.error({
+              message: 'Error!',
+              description: err.graphQLErrors[0].message,
+            });
+          } else {
+            notification.error({
+              message: 'Error!',
+            });
+          }
+        }
       }}
     >
       <Avatar icon={<UserOutlined />} size="large" src={avatar} />

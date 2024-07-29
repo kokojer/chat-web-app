@@ -3,7 +3,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { Message, Prisma } from "@prisma/client";
 import { ChatService } from "../chat/chat.service";
 import { CreateMessageInput } from "./dto/create-message.input";
-import { GraphQLError } from "graphql/error";
+
+const countToTake = 50;
 
 @Injectable()
 export class MessageService {
@@ -29,6 +30,27 @@ export class MessageService {
             content: text,
           },
         },
+      },
+      include: {
+        MessageContent: true,
+      },
+    });
+  }
+
+  async getChatMessages(chatId: number, page: number): Promise<Message[]> {
+    await this.chatService.getChat(chatId);
+
+    return this.prisma.message.findMany({
+      skip: (page - 1) * countToTake,
+      take: countToTake,
+      where: {
+        chatId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        MessageContent: true,
       },
     });
   }

@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { DateTimeResolver } from "graphql-scalars";
 
 @ObjectType()
 export class User {
@@ -19,4 +20,13 @@ export class User {
 
   @Field(() => String)
   password: string;
+
+  @Field(() => DateTimeResolver, { nullable: true })
+  lastVisitTime: Date;
+
+  @Field(() => DateTimeResolver)
+  createdAt: Date;
+
+  @Field(() => DateTimeResolver)
+  updatedAt: Date;
 }

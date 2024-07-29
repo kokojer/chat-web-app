@@ -1,10 +1,10 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Avatar, Divider, Input, List, Skeleton, Space } from 'antd';
+import { Input, List, Skeleton } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import styled from 'styled-components';
 
-import { UserChatCard } from '../../../entities/userChatCard';
+import { UserChatCard } from 'entities/userChatCard';
 
 export const SearchChats: FC = () => {
   const [loading, setLoading] = useState(false);

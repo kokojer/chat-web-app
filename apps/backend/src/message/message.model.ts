@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { DateTimeResolver } from "graphql-scalars";
 import { User } from "../user/user.model";
 import { Chat } from "../chat/chat.model";
 
@@ -21,6 +22,12 @@ export class Message {
 
   @Field(() => [MessageContent])
   MessageContent: MessageContent[];
+
+  @Field(() => DateTimeResolver)
+  createdAt: Date;
+
+  @Field(() => DateTimeResolver)
+  updatedAt: Date;
 }
 
 @ObjectType()
@@ -39,4 +46,10 @@ export class MessageContent {
 
   @Field(() => Message)
   Message: Message;
+
+  @Field(() => DateTimeResolver)
+  createdAt: Date;
+
+  @Field(() => DateTimeResolver)
+  updatedAt: Date;
 }
