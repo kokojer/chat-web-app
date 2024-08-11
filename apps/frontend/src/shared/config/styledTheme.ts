@@ -9,7 +9,7 @@ export const lightStyledTheme = {
     main: '#FFFFFF',
     light: '#FAFBFF',
     primary: '#E6ECFE',
-    messagePrimary: '#96c0ee',
+    messagePrimary: '#a0c3f8',
     messageSecondary: '#d7e8f6',
   },
   boxShadow: 'rgba(46, 46, 162, 0.2)',

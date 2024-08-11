@@ -1,10 +1,12 @@
 import { SendOutlined } from '@ant-design/icons';
 import { useLazyQuery, useMutation, useSubscription } from '@apollo/client';
-import { Button, Flex, Image, Input, Typography } from 'antd';
+import { Button, Flex, Image, Input, List, Skeleton, Typography } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+
+import { InfiniteScroll } from 'entities/infiniteScroll';
 
 import { userInfo } from 'shared/config/globalVars.ts';
 
@@ -29,15 +31,27 @@ export const Chat: FC = () => {
   const [getChatMessages, { data: messageData }] =
     useLazyQuery(GET_CHAT_MESSAGES);
 
-  useEffect(() => {
+  const [messages, setMessages] = useState<
+    GetChatMessagesQuery['getChatMessages']
+  >([]);
+
+  const getData = useCallback(async () => {
     if (isNaN(Number(id))) return;
     getChat({
       variables: { id: Number(id) },
     });
-    getChatMessages({
+    const resultMessages = await getChatMessages({
       variables: { chatId: Number(id), page: 1 },
     });
+
+    if (!resultMessages.data) return;
+
+    setMessages(resultMessages.data?.getChatMessages);
   }, [getChat, getChatMessages, id]);
+
+  useEffect(() => {
+    getData();
+  }, [getChat, getChatMessages, getData, id]);
 
   const userData = userInfo();
 
@@ -53,20 +67,9 @@ export const Chat: FC = () => {
     variables: { chatId: Number(id) },
   });
 
-  console.log(newMessage);
-
   const [sendMessage] = useMutation(SEND_MESSAGE);
 
-  const [messages, setMessages] = useState<
-    GetChatMessagesQuery['getChatMessages']
-  >([]);
-
   const [typedMessage, setTypedMessage] = useState('');
-
-  useEffect(() => {
-    if (!messageData) return;
-    setMessages(messageData.getChatMessages);
-  }, [messageData]);
 
   useEffect(() => {
     if (!newMessage) return;
@@ -74,6 +77,21 @@ export const Chat: FC = () => {
       prev ? [newMessage.messageAdded, ...prev] : [newMessage.messageAdded],
     );
   }, [newMessage]);
+
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    getChatMessages({
+      variables: { chatId: Number(id), page },
+    });
+  }, [getChatMessages, id, page]);
+
+  // const target =
+  //   this.props.height || this._scrollableNode
+  //     ? (event.target as HTMLElement)
+  //     : document.documentElement.scrollTop
+  //     ? document.documentElement
+  //     : document.body;
 
   return (
     <ChatContainer>
@@ -109,9 +127,15 @@ export const Chat: FC = () => {
                 </Flex>
               </Flex>
             </ChatHeader>
-            <Messages>
-              {messages.map((message) => {
-                return (
+            <MessageContainer>
+              <StyledInfiniteScroll
+                load={() => {
+                  console.log('loading');
+                }}
+                hasMore
+                loader={'WEFEWF'}
+              >
+                {messages.map((message) => (
                   <Message
                     $interlocutorMessage={message.userId !== userData?.userId}
                   >
@@ -124,9 +148,9 @@ export const Chat: FC = () => {
                       })}
                     </MessageDate>
                   </Message>
-                );
-              })}
-            </Messages>
+                ))}
+              </StyledInfiniteScroll>
+            </MessageContainer>
             <FooterContainer>
               <StyledTextarea
                 size="large"
@@ -136,17 +160,29 @@ export const Chat: FC = () => {
                 onChange={(e) => {
                   setTypedMessage(e.target.value);
                 }}
+                onPressEnter={async (e) => {
+                  if (!e.shiftKey && typedMessage.trim()) {
+                    await sendMessage({
+                      variables: {
+                        chatId: Number(id),
+                        text: typedMessage,
+                      },
+                    });
+                    setTypedMessage('');
+                  }
+                }}
               />
               <Button
                 icon={<SendOutlined />}
                 type="primary"
                 onClick={async () => {
-                  await sendMessage({
-                    variables: {
-                      chatId: Number(id),
-                      text: typedMessage,
-                    },
-                  });
+                  typedMessage.trim() &&
+                    (await sendMessage({
+                      variables: {
+                        chatId: Number(id),
+                        text: typedMessage,
+                      },
+                    }));
                   setTypedMessage('');
                 }}
               >
@@ -163,6 +199,11 @@ export const Chat: FC = () => {
     </ChatContainer>
   );
 };
+
+const MessageContainer = styled.div`
+  overflow: hidden;
+  flex: 1;
+`;
 
 const ChatContainer = styled.div`
   display: flex;
@@ -211,10 +252,11 @@ const FooterContainer = styled.div`
   }
 `;
 
-const Messages = styled.div`
-  display: flex;
-  flex-direction: column-reverse;
+const StyledInfiniteScroll = styled(InfiniteScroll)`
   overflow: auto;
+  display: flex;
+  height: 100%;
+  flex-direction: column-reverse;
   gap: 8px;
   padding: 15px;
   flex: 1;
@@ -226,6 +268,7 @@ const MessageContent = styled(Typography)`
 
 const MessageDate = styled(Typography)`
   font-size: 12px;
+  color: ${({ theme }) => theme.base.typography.inActiveText};
 `;
 
 const Message = styled.div<{ $interlocutorMessage: boolean }>`
