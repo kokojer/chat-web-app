@@ -1,36 +1,73 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Input, List, Skeleton } from 'antd';
-import { FC, useEffect, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { useQuery, useReactiveVar, useSubscription } from '@apollo/client';
+import { Empty, Input, List, Skeleton } from 'antd';
+import { FC, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { UserChatCard } from 'entities/userChatCard';
 
-export const SearchChats: FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<DataType[]>([]);
+import { userInfo } from 'shared/config/globalVars.ts';
 
-  const loadMoreData = () => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
-    fetch(
-      'https://randomuser.me/api/?results=15&inc=name,gender,email,nat,picture&noinfo',
-    )
-      .then((res) => res.json())
-      .then((body) => {
-        setData([...data, ...body.results]);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
+import { GetChatsForUserQuery } from '../../../../__generated__/graphql.ts';
+import { GET_CHATS_FOR_USER, SUBSCRIBE_CHATS } from '../api.ts';
+
+export const SearchChats: FC = () => {
+  const [searchValue, setSearchValue] = useState('');
+  const currentUser = useReactiveVar(userInfo);
+  const userId = currentUser?.userId ?? 0;
+  const { data, loading } = useQuery(GET_CHATS_FOR_USER, {
+    variables: {
+      userId,
+      page: 1,
+    },
+    skip: !userId,
+  });
+  const { data: updatedChatData } = useSubscription(SUBSCRIBE_CHATS, {
+    variables: {
+      userId,
+    },
+    skip: !userId,
+  });
+  const [chats, setChats] = useState<GetChatsForUserQuery['getChatsForUser']>(
+    [],
+  );
 
   useEffect(() => {
-    loadMoreData();
-  }, []);
+    if (data?.getChatsForUser) {
+      setChats(data.getChatsForUser);
+    }
+  }, [data?.getChatsForUser]);
+
+  useEffect(() => {
+    const updatedChat = updatedChatData?.chatUpdated;
+    if (!updatedChat) return;
+
+    setChats((prevChats) => [
+      updatedChat,
+      ...prevChats.filter((chat) => chat.id !== updatedChat.id),
+    ]);
+  }, [updatedChatData?.chatUpdated]);
+
+  const filteredChats = useMemo(
+    () =>
+      chats.filter((chat) => {
+        const interlocutor = chat.ChatMembers.find(
+          (member) => member.User.id !== currentUser?.userId,
+        )?.User;
+        const search = searchValue.trim().toLowerCase();
+
+        if (!search) return true;
+
+        return [
+          interlocutor?.firstName,
+          interlocutor?.lastName,
+          interlocutor?.username,
+        ]
+          .filter(Boolean)
+          .some((value) => value?.toLowerCase().includes(search));
+      }),
+    [chats, currentUser?.userId, searchValue],
+  );
 
   return (
     <StyledContainer>
@@ -38,30 +75,41 @@ export const SearchChats: FC = () => {
         prefix={<SearchOutlined />}
         size="large"
         placeholder="Search"
+        value={searchValue}
+        onChange={(event) => setSearchValue(event.target.value)}
       />
       <ScrollableDiv id="scrollableDiv">
-        <InfiniteScroll
-          dataLength={data.length}
-          next={loadMoreData}
-          hasMore={data.length < 50}
-          loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-          scrollableTarget="scrollableDiv"
-          style={{ overflow: 'visible' }}
-        >
+        {loading ? (
+          <Skeleton avatar paragraph={{ rows: 2 }} active />
+        ) : filteredChats.length ? (
           <List
-            dataSource={data}
-            renderItem={(item) => (
-              <UserChatCard
-                data={{
-                  avatar: item.picture.medium,
-                  firstName: item.name.first,
-                  lastName: item.name.last,
-                  username: item.email,
-                }}
-              />
-            )}
+            dataSource={filteredChats}
+            renderItem={(chat) => {
+              const interlocutor = chat.ChatMembers.find(
+                (member) => member.User.id !== currentUser?.userId,
+              )?.User;
+              const lastMessage = chat.Message[0];
+
+              if (!interlocutor) return null;
+
+              return (
+                <UserChatCard
+                  data={{
+                    chatId: chat.id,
+                    avatar: interlocutor.avatar,
+                    firstName: interlocutor.firstName,
+                    lastName: interlocutor.lastName,
+                    username: interlocutor.username,
+                    lastMessage: lastMessage?.MessageContent[0]?.content,
+                    lastMessageCreatedAt: lastMessage?.createdAt,
+                  }}
+                />
+              );
+            }}
           />
-        </InfiniteScroll>
+        ) : (
+          <Empty description="Chats not found" />
+        )}
       </ScrollableDiv>
     </StyledContainer>
   );

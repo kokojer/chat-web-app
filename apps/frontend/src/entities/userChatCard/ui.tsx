@@ -1,24 +1,42 @@
 import { UserOutlined } from '@ant-design/icons';
-import { Avatar, Flex, List, Typography, theme } from 'antd';
+import { Avatar, Flex, List, Typography } from 'antd';
+import { formatDistanceToNow } from 'date-fns';
 import { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const { Title, Text } = Typography;
 
 interface UserMiniCardProps {
   data: {
+    chatId: number;
     firstName: string;
     lastName: string;
     username: string;
     avatar?: string | null;
+    lastMessage?: string | null;
+    lastMessageCreatedAt?: Date | string | null;
   };
 }
 
 export const UserChatCard: FC<UserMiniCardProps> = ({
-  data: { firstName, lastName, username, avatar },
+  data: {
+    chatId,
+    firstName,
+    lastName,
+    username,
+    avatar,
+    lastMessage,
+    lastMessageCreatedAt,
+  },
 }) => {
+  const navigate = useNavigate();
+  const lastMessageTime = lastMessageCreatedAt
+    ? formatDistanceToNow(lastMessageCreatedAt, { addSuffix: true })
+    : '';
+
   return (
-    <StyledListItem key={'4'}>
+    <StyledListItem onClick={() => navigate(`/chat/${chatId}`)}>
       <Flex justify="space-between" style={{ width: '100%' }}>
         <Flex align="center" gap={15}>
           <Avatar icon={<UserOutlined />} size={50} src={avatar} />
@@ -26,20 +44,12 @@ export const UserChatCard: FC<UserMiniCardProps> = ({
             <Title level={5} style={{ margin: 0 }} ellipsis>
               {firstName} {lastName}
             </Title>
-            <Text>last online 5 hours ago</Text>
+            <Text ellipsis>@{username}</Text>
           </Flex>
         </Flex>
-        <Text>1 minute ago</Text>
+        <MessageTime>{lastMessageTime}</MessageTime>
       </Flex>
-      <StyledMessage>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi
-        magni necessitatibus quia tempore. Accusantium assumenda at autem
-        dolore, ducimus eos excepturi expedita explicabo molestiae mollitia nisi
-        perferendis quia sit, voluptatibus? Lorem ipsum dolor sit amet,
-        consectetur adipisicing elit. Eius explicabo iste magni minima optio!
-        Aliquid, distinctio, perspiciatis! Ea eligendi ex facilis harum
-        laudantium molestias natus odit, pariatur, quia, ut voluptatibus.
-      </StyledMessage>
+      <StyledMessage>{lastMessage ?? 'No messages yet'}</StyledMessage>
     </StyledListItem>
   );
 };
@@ -67,10 +77,17 @@ const StyledListItem = styled(List.Item)`
 `;
 
 const StyledMessage = styled(Text)`
+  width: 100%;
+  text-align: left;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   display: -webkit-box;
   text-overflow: ellipsis;
   padding-right: 30px;
+`;
+
+const MessageTime = styled(Text)`
+  flex-shrink: 0;
+  color: ${({ theme }) => theme.base.typography.inActiveText};
 `;

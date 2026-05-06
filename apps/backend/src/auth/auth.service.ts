@@ -69,12 +69,14 @@ export class AuthService {
       username: loginUserInput.username,
     });
 
-    const { password, ...result } = user;
+    const visitedUser = await this.userService.updateLastVisitTime(user.id);
+
+    const { password, ...result } = visitedUser;
 
     const tokenWithUser = {
       access_token: this.jwtService.sign({
-        username: user.username,
-        userId: user.id,
+        username: visitedUser.username,
+        userId: visitedUser.id,
       }),
       user: result,
     };
@@ -82,7 +84,7 @@ export class AuthService {
     const sessionData = {
       User: {
         connect: {
-          id: tokenWithUser.user.id,
+          id: visitedUser.id,
         },
       },
       ip: req.ip,
@@ -163,9 +165,9 @@ export class AuthService {
       maxAge: Number(newSession.expiresIn),
     });
 
-    const user = await this.userService.getUser({
-      id: newSession.userId,
-    });
+    const user = await this.userService.updateLastVisitTime(
+      newSession.userId,
+    );
 
     const { password, ...result } = user;
 
@@ -185,6 +187,9 @@ export class AuthService {
         extensions: { code: 401 },
       });
     }
+
+    await this.userService.updateLastVisitTime(session.userId);
+
     await this.deleteSession(session.id);
 
     res.clearCookie("refreshToken");

@@ -1,8 +1,8 @@
 import { SendOutlined } from '@ant-design/icons';
 import { useLazyQuery, useMutation, useSubscription } from '@apollo/client';
-import { Button, Flex, Image, Input, List, Skeleton, Typography } from 'antd';
+import { Button, Flex, Image, Input, Spin, Typography } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -17,26 +17,36 @@ import {
   SEND_MESSAGE,
   SUBSCRIBE_CHAT,
 } from '../api.ts';
+import { GET_CHATS_FOR_USER } from '../../searchChats/api.ts';
 
 const { TextArea } = Input;
 
 const { Title, Text } = Typography;
+const MESSAGES_PER_PAGE = 50;
+const ONLINE_THRESHOLD_MS = 60 * 1000;
 
 export const Chat: FC = () => {
   const { id } = useParams();
+  const userData = userInfo();
 
   const [getChat, { data: chatData, error: chatError }] =
     useLazyQuery(GET_CHAT);
 
-  const [getChatMessages, { data: messageData }] =
-    useLazyQuery(GET_CHAT_MESSAGES);
+  const [getChatMessages] = useLazyQuery(GET_CHAT_MESSAGES, {
+    fetchPolicy: 'network-only',
+  });
 
   const [messages, setMessages] = useState<
     GetChatMessagesQuery['getChatMessages']
   >([]);
+  const [page, setPage] = useState(1);
+  const [hasMoreMessages, setHasMoreMessages] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const getData = useCallback(async () => {
     if (isNaN(Number(id))) return;
+    setPage(1);
+    setHasMoreMessages(false);
     getChat({
       variables: { id: Number(id) },
     });
@@ -46,14 +56,15 @@ export const Chat: FC = () => {
 
     if (!resultMessages.data) return;
 
-    setMessages(resultMessages.data?.getChatMessages);
+    const firstPageMessages = resultMessages.data.getChatMessages;
+
+    setMessages(firstPageMessages);
+    setHasMoreMessages(firstPageMessages.length === MESSAGES_PER_PAGE);
   }, [getChat, getChatMessages, id]);
 
   useEffect(() => {
     getData();
   }, [getChat, getChatMessages, getData, id]);
-
-  const userData = userInfo();
 
   const interlocutor = useMemo(
     () =>
@@ -62,6 +73,22 @@ export const Chat: FC = () => {
       )?.User,
     [chatData?.getChat.ChatMembers, userData?.userId],
   );
+  const interlocutorStatus = useMemo(() => {
+    if (!interlocutor?.lastVisitTime) {
+      return null;
+    }
+
+    const lastVisitTime = new Date(interlocutor.lastVisitTime).getTime();
+    const isOnline = Date.now() - lastVisitTime < ONLINE_THRESHOLD_MS;
+
+    if (isOnline) {
+      return 'online';
+    }
+
+    return formatDistanceToNow(interlocutor.lastVisitTime, {
+      addSuffix: true,
+    });
+  }, [interlocutor?.lastVisitTime]);
 
   const { data: newMessage } = useSubscription(SUBSCRIBE_CHAT, {
     variables: { chatId: Number(id) },
@@ -71,27 +98,76 @@ export const Chat: FC = () => {
 
   const [typedMessage, setTypedMessage] = useState('');
 
+  const sendTypedMessage = useCallback(async () => {
+    if (!typedMessage.trim() || isNaN(Number(id))) return;
+
+    const newMessage = await sendMessage({
+      variables: {
+        chatId: Number(id),
+        text: typedMessage,
+      },
+      refetchQueries: userData?.userId
+        ? [
+            {
+              query: GET_CHATS_FOR_USER,
+              variables: { userId: userData.userId, page: 1 },
+            },
+          ]
+        : [],
+    });
+
+    const addedMessage = newMessage.data?.addMessage;
+
+    if (addedMessage) {
+      setMessages((prev) =>
+        prev.some((message) => message.id === addedMessage.id)
+          ? prev
+          : [addedMessage, ...prev],
+      );
+    }
+
+    setTypedMessage('');
+  }, [id, sendMessage, typedMessage, userData?.userId]);
+
   useEffect(() => {
     if (!newMessage) return;
     setMessages((prev) =>
-      prev ? [newMessage.messageAdded, ...prev] : [newMessage.messageAdded],
+      prev.some((message) => message.id === newMessage.messageAdded.id)
+        ? prev
+        : [newMessage.messageAdded, ...prev],
     );
   }, [newMessage]);
 
-  const [page, setPage] = useState(1);
+  const loadMoreMessages = useCallback(async () => {
+    if (isLoadingMore || !hasMoreMessages || isNaN(Number(id))) return;
 
-  useEffect(() => {
-    getChatMessages({
-      variables: { chatId: Number(id), page },
+    const nextPage = page + 1;
+
+    setIsLoadingMore(true);
+    const resultMessages = await getChatMessages({
+      variables: { chatId: Number(id), page: nextPage },
     });
-  }, [getChatMessages, id, page]);
+    setIsLoadingMore(false);
 
-  // const target =
-  //   this.props.height || this._scrollableNode
-  //     ? (event.target as HTMLElement)
-  //     : document.documentElement.scrollTop
-  //     ? document.documentElement
-  //     : document.body;
+    const nextPageMessages = resultMessages.data?.getChatMessages ?? [];
+
+    setMessages((prev) => {
+      const existingIds = new Set(prev.map((message) => message.id));
+      const uniqueNextMessages = nextPageMessages.filter(
+        (message) => !existingIds.has(message.id),
+      );
+
+      return [...prev, ...uniqueNextMessages];
+    });
+    setPage(nextPage);
+    setHasMoreMessages(nextPageMessages.length === MESSAGES_PER_PAGE);
+  }, [
+    getChatMessages,
+    hasMoreMessages,
+    id,
+    isLoadingMore,
+    page,
+  ]);
 
   return (
     <ChatContainer>
@@ -119,24 +195,20 @@ export const Chat: FC = () => {
                   <Title level={3} style={{ margin: 0 }} ellipsis>
                     {interlocutor.firstName} {interlocutor.lastName}
                   </Title>
-                  <Text>
-                    {interlocutor.lastVisitTime
-                      ? interlocutor.lastVisitTime
-                      : 'online'}
-                  </Text>
+                  {interlocutorStatus && <Text>{interlocutorStatus}</Text>}
                 </Flex>
               </Flex>
             </ChatHeader>
             <MessageContainer>
               <StyledInfiniteScroll
-                load={() => {
-                  console.log('loading');
-                }}
-                hasMore
-                loader={'WEFEWF'}
+                load={loadMoreMessages}
+                hasMore={hasMoreMessages}
+                isLoading={isLoadingMore}
+                loader={<Spin size="small" />}
               >
                 {messages.map((message) => (
                   <Message
+                    key={message.id}
                     $interlocutorMessage={message.userId !== userData?.userId}
                   >
                     <MessageContent>
@@ -162,13 +234,8 @@ export const Chat: FC = () => {
                 }}
                 onPressEnter={async (e) => {
                   if (!e.shiftKey && typedMessage.trim()) {
-                    await sendMessage({
-                      variables: {
-                        chatId: Number(id),
-                        text: typedMessage,
-                      },
-                    });
-                    setTypedMessage('');
+                    e.preventDefault();
+                    await sendTypedMessage();
                   }
                 }}
               />
@@ -176,14 +243,7 @@ export const Chat: FC = () => {
                 icon={<SendOutlined />}
                 type="primary"
                 onClick={async () => {
-                  typedMessage.trim() &&
-                    (await sendMessage({
-                      variables: {
-                        chatId: Number(id),
-                        text: typedMessage,
-                      },
-                    }));
-                  setTypedMessage('');
+                  await sendTypedMessage();
                 }}
               >
                 Send

@@ -1,70 +1,63 @@
-import { FC, ReactNode, useCallback, useEffect, useRef } from 'react';
+import {
+  HTMLAttributes,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 
-interface InfiniteScrollProps {
-  load: () => void;
+interface InfiniteScrollProps extends HTMLAttributes<HTMLDivElement> {
+  load: () => Promise<void> | void;
   hasMore: boolean;
-  loader: ReactNode;
+  loader?: ReactNode;
+  isLoading?: boolean;
   children?: ReactNode;
   endMessage?: ReactNode;
 }
 
-export const InfiniteScroll: FC<InfiniteScrollProps> = ({
+export const InfiniteScroll = ({
   load,
   hasMore,
+  isLoading = false,
   loader,
   children,
   endMessage,
   ...props
-}) => {
+}: InfiniteScrollProps) => {
+  const rootRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const handleIntersect = useCallback(
-    (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      console.log('handleIntersect', entries);
-      // Check if the sentinel element is intersecting, and if so, call the load function
-      if (entries[0].isIntersecting && hasMore) {
+    (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasMore && !isLoading) {
         load();
       }
     },
-    [hasMore, load],
+    [hasMore, isLoading, load],
   );
 
   useEffect(() => {
-    // Create a new IntersectionObserver when the component mounts
+    if (!rootRef.current || !sentinelRef.current) return;
+
+    observerRef.current?.disconnect();
     observerRef.current = new IntersectionObserver(handleIntersect, {
-      root: null,
+      root: rootRef.current,
       rootMargin: '0px',
-      threshold: 1.0,
+      threshold: 0.1,
     });
 
-    console.log(observerRef);
+    observerRef.current.observe(sentinelRef.current);
 
-    // Attach the observer to the sentinel element
-    if (sentinelRef.current) {
-      observerRef.current.observe(sentinelRef.current);
-    }
-
-    // Clean up the observer when the component unmounts
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
+      observerRef.current?.disconnect();
     };
-  }, [handleIntersect, load]);
-
-  useEffect(() => {
-    // When the hasMore prop changes, disconnect the previous observer and reattach it to the new sentinel element
-    if (observerRef.current && sentinelRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current.observe(sentinelRef.current);
-    }
-  }, [hasMore]);
+  }, [handleIntersect]);
 
   return (
-    <div {...props}>
+    <div {...props} ref={rootRef}>
       {children}
-      <div ref={sentinelRef}>{hasMore ? loader : endMessage}</div>
+      <div ref={sentinelRef}>{isLoading ? loader : !hasMore && endMessage}</div>
     </div>
   );
 };

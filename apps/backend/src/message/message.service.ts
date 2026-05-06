@@ -18,23 +18,35 @@ export class MessageService {
     { chatId, text }: CreateMessageInput,
   ): Promise<Message> {
     await this.chatService.checkIfUsersExists([userId]);
-    await this.chatService.getChat(chatId);
+    await this.chatService.checkIfHavePermissionToChat(userId, chatId);
 
-    return this.prisma.message.create({
-      data: {
-        userId,
-        chatId,
-        MessageContent: {
-          create: {
-            type: "text",
-            content: text,
+    const [message] = await this.prisma.$transaction([
+      this.prisma.message.create({
+        data: {
+          userId,
+          chatId,
+          MessageContent: {
+            create: {
+              type: "text",
+              content: text,
+            },
           },
         },
-      },
-      include: {
-        MessageContent: true,
-      },
-    });
+        include: {
+          MessageContent: true,
+        },
+      }),
+      this.prisma.chat.update({
+        where: {
+          id: chatId,
+        },
+        data: {
+          updatedAt: new Date(),
+        },
+      }),
+    ]);
+
+    return message;
   }
 
   async getChatMessages(chatId: number, page: number): Promise<Message[]> {

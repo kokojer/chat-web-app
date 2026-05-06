@@ -105,5 +105,6 @@ input CreateMessageInput {
 }
 
 type Subscription {
+  chatUpdated(userId: Int!): Chat!
   messageAdded(chatId: Int!): Message!
 }

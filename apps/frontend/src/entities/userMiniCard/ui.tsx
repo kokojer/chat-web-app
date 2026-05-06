@@ -5,6 +5,10 @@ import { Dispatch, FC, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { GET_CHATS_FOR_USER } from 'features/searchChats/api.ts';
+
+import { userInfo } from 'shared/config/globalVars.ts';
+
 import { CREATE_CHAT } from './api.ts';
 
 const { Title, Text } = Typography;
@@ -26,6 +30,8 @@ export const UserMiniCard: FC<UserMiniCardProps> = ({
 }) => {
   const [createChat] = useMutation(CREATE_CHAT);
   const navigate = useNavigate();
+  const currentUser = userInfo();
+
   return (
     <StyledFlex
       align="center"
@@ -33,7 +39,18 @@ export const UserMiniCard: FC<UserMiniCardProps> = ({
       flex={1}
       onClick={async () => {
         try {
-          const chat = await createChat({ variables: { userId } });
+          const chat = await createChat({
+            variables: { userId },
+            refetchQueries: currentUser?.userId
+              ? [
+                  {
+                    query: GET_CHATS_FOR_USER,
+                    variables: { userId: currentUser.userId, page: 1 },
+                  },
+                ]
+              : [],
+            awaitRefetchQueries: true,
+          });
           navigate(`/chat/${chat.data?.createChat.id}`);
           setIsModalOpen(false);
         } catch (err) {

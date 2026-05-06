@@ -19,6 +19,7 @@ export const GET_CHAT = gql(`
 export const SUBSCRIBE_CHAT = gql(`
   subscription messageAdded($chatId: Int!) {
     messageAdded(chatId: $chatId) {
+      id
       userId
       createdAt
       MessageContent {
@@ -31,6 +32,7 @@ export const SUBSCRIBE_CHAT = gql(`
 export const GET_CHAT_MESSAGES = gql(`
   query getChatMessages($chatId: Int!, $page: Int!) {
     getChatMessages(chatId: $chatId, page:$page){
+      id
       userId
       createdAt
       MessageContent{
@@ -47,6 +49,12 @@ export const SEND_MESSAGE = gql(`
       text: $text,
     }){
       chatId
+      id
+      userId
+      createdAt
+      MessageContent {
+        content
+      }
     }
   }
 `);

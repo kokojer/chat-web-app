@@ -51,6 +51,9 @@ export class MessageResolver {
     await pubSub.publish(`messageAdded_${newMessage.chatId}`, {
       messageAdded: newMessage,
     });
+    await pubSub.publish("chatUpdated", {
+      chatUpdated: await this.chatService.getChat(newMessage.chatId),
+    });
 
     return newMessage;
   }

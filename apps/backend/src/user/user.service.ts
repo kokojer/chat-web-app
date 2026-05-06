@@ -100,6 +100,13 @@ export class UserService {
     });
   }
 
+  async updateLastVisitTime(userId: number): Promise<User> {
+    return this.updateUser({
+      where: { id: userId },
+      data: { lastVisitTime: new Date() },
+    });
+  }
+
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prisma.user.delete({
       where,

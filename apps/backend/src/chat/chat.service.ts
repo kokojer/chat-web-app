@@ -10,6 +10,11 @@ export type IncludedChat = Prisma.ChatGetPayload<{
         User: true;
       };
     };
+    Message: {
+      include: {
+        MessageContent: true;
+      };
+    };
   };
 }>;
 
@@ -109,6 +114,15 @@ export class ChatService {
             User: true,
           },
         },
+        Message: {
+          take: 1,
+          orderBy: {
+            createdAt: "desc",
+          },
+          include: {
+            MessageContent: true,
+          },
+        },
       },
       where: {
         id,
@@ -121,7 +135,7 @@ export class ChatService {
   }
 
   async getChatsForUser(userId: number): Promise<IncludedChat[]> {
-    return this.prisma.chat.findMany({
+    const chats = await this.prisma.chat.findMany({
       where: {
         ChatMembers: {
           some: {
@@ -136,11 +150,26 @@ export class ChatService {
           },
         },
         Message: {
+          take: 1,
+          orderBy: {
+            createdAt: "desc",
+          },
           include: {
             MessageContent: true,
           },
         },
       },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    return chats.sort((firstChat, secondChat) => {
+      const firstDate = firstChat.Message[0]?.createdAt ?? firstChat.updatedAt;
+      const secondDate =
+        secondChat.Message[0]?.createdAt ?? secondChat.updatedAt;
+
+      return secondDate.getTime() - firstDate.getTime();
     });
   }
 }

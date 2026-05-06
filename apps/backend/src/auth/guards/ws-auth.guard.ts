@@ -23,8 +23,20 @@ export class WsAuthGuard implements CanActivate {
       req.connectionParams.authToken.split(" ")[1],
     );
 
-    if (!decodedData.userId || !args.chatId) {
-      throw new GraphQLError(`User or chat are invalid!`);
+    if (!decodedData.userId) {
+      throw new GraphQLError(`User is invalid!`);
+    }
+
+    if (args.userId) {
+      if (decodedData.userId !== args.userId) {
+        throw new GraphQLError(`User is invalid!`);
+      }
+
+      return true;
+    }
+
+    if (!args.chatId) {
+      throw new GraphQLError(`Chat is invalid!`);
     }
 
     await this.chatService.checkIfHavePermissionToChat(

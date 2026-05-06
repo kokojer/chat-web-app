@@ -2,13 +2,24 @@ import { ExecutionContext, Injectable } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { AuthGuard } from "@nestjs/passport";
 import { UserService } from "../../user/user.service";
-import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {
-  constructor(private jwtService: JwtService) {
+  constructor(private userService: UserService) {
     super();
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const canActivate = await super.canActivate(context);
+
+    if (!canActivate) return false;
+
+    const req = this.getRequest(context);
+    if (req.user?.userId) {
+      await this.userService.updateLastVisitTime(req.user.userId);
+    }
+
+    return true;
   }
 
   getRequest(context: ExecutionContext) {
